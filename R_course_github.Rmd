@@ -43,7 +43,7 @@ library(janitor)
 
 Konza map and backgorund here
 
-```{r konza_map}
+```{r}
 
 
 ```
@@ -52,7 +52,7 @@ Konza map and backgorund here
 
 In this section, we will perform some basic data cleaning operations to get our data ready for further analysis
 
-```{r data wrangling and tidying}
+```{r}
 
 # bring in and examine konza groundwater data set
 kgw <- read_csv("kgw.csv", col_types = cols(WLDate = col_character()))
@@ -72,6 +72,6 @@ kgw <- kgw %>%
   dplyr::select(-wl_date)
   
 # now look at data and col types again
-head(kgw)
+summary(kgw)
 
 ```
