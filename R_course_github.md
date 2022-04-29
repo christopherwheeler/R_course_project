@@ -1,7 +1,6 @@
-Untitled
+R Project: Konza Groundwater Analysis
 ================
-
-# Script purpose and organization
+Christopher Wheeler
 
 ## Prepare the R environment
 
@@ -12,316 +11,38 @@ visibility in the final report.
 knitr::opts_chunk$set(echo = TRUE)
 library(dataRetrieval)
 library(dplyr)
-```
-
-    ## 
-    ## Attaching package: 'dplyr'
-
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     filter, lag
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     intersect, setdiff, setequal, union
-
-``` r
 library(zoo)
-```
-
-    ## 
-    ## Attaching package: 'zoo'
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     as.Date, as.Date.numeric
-
-``` r
 library(lubridate)
-```
-
-    ## 
-    ## Attaching package: 'lubridate'
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     date, intersect, setdiff, union
-
-``` r
 library(ggplot2)
 library(plotly)
-```
-
-    ## Warning: package 'plotly' was built under R version 4.1.2
-
-    ## 
-    ## Attaching package: 'plotly'
-
-    ## The following object is masked from 'package:ggplot2':
-    ## 
-    ##     last_plot
-
-    ## The following object is masked from 'package:stats':
-    ## 
-    ##     filter
-
-    ## The following object is masked from 'package:graphics':
-    ## 
-    ##     layout
-
-``` r
 library(cowplot)
-```
-
-    ## Warning: package 'cowplot' was built under R version 4.1.2
-
-    ## 
-    ## Attaching package: 'cowplot'
-
-    ## The following object is masked from 'package:lubridate':
-    ## 
-    ##     stamp
-
-``` r
 library(tidyverse)
-```
-
-    ## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
-
-    ## v tibble  3.1.2     v purrr   0.3.4
-    ## v tidyr   1.1.4     v stringr 1.4.0
-    ## v readr   1.4.0     v forcats 0.5.1
-
-    ## Warning: package 'tidyr' was built under R version 4.1.1
-
-    ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
-    ## x lubridate::as.difftime() masks base::as.difftime()
-    ## x lubridate::date()        masks base::date()
-    ## x plotly::filter()         masks dplyr::filter(), stats::filter()
-    ## x lubridate::intersect()   masks base::intersect()
-    ## x dplyr::lag()             masks stats::lag()
-    ## x lubridate::setdiff()     masks base::setdiff()
-    ## x cowplot::stamp()         masks lubridate::stamp()
-    ## x lubridate::union()       masks base::union()
-
-``` r
 library(fs)
-```
-
-    ## Warning: package 'fs' was built under R version 4.1.1
-
-``` r
 library(Rcpp)
 library(sp)
 library(raster)
-```
-
-    ## 
-    ## Attaching package: 'raster'
-
-    ## The following object is masked from 'package:tidyr':
-    ## 
-    ##     extract
-
-    ## The following object is masked from 'package:plotly':
-    ## 
-    ##     select
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     select
-
-``` r
 library(rgdal)
-```
-
-    ## rgdal: version: 1.5-23, (SVN revision 1121)
-    ## Geospatial Data Abstraction Library extensions to R successfully loaded
-    ## Loaded GDAL runtime: GDAL 3.2.1, released 2020/12/29
-    ## Path to GDAL shared files: C:/Users/Christopher/Documents/R/R-4.1.0/library/rgdal/gdal
-    ## GDAL binary built with GEOS: TRUE 
-    ## Loaded PROJ runtime: Rel. 7.2.1, January 1st, 2021, [PJ_VERSION: 721]
-    ## Path to PROJ shared files: C:/Users/Christopher/Documents/R/R-4.1.0/library/rgdal/proj
-    ## PROJ CDN enabled: FALSE
-    ## Linking to sp version:1.4-5
-    ## To mute warnings of possible GDAL/OSR exportToProj4() degradation,
-    ## use options("rgdal_show_exportToProj4_warnings"="none") before loading rgdal.
-    ## Overwritten PROJ_LIB was C:/Users/Christopher/Documents/R/R-4.1.0/library/rgdal/proj
-
-``` r
 library(rasterVis)
-```
-
-    ## Loading required package: terra
-
-    ## terra version 1.3.4
-
-    ## 
-    ## Attaching package: 'terra'
-
-    ## The following object is masked from 'package:rgdal':
-    ## 
-    ##     project
-
-    ## The following object is masked from 'package:zoo':
-    ## 
-    ##     time<-
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     src
-
-    ## Loading required package: lattice
-
-    ## Loading required package: latticeExtra
-
-    ## 
-    ## Attaching package: 'latticeExtra'
-
-    ## The following object is masked from 'package:ggplot2':
-    ## 
-    ##     layer
-
-``` r
 library(sf)
-```
-
-    ## Linking to GEOS 3.9.0, GDAL 3.2.1, PROJ 7.2.1
-
-``` r
 library(tidyverse)
 library(dplyr)
 library(EcoHydRology)
-```
-
-    ## Loading required package: operators
-
-    ## 
-    ## Attaching package: 'operators'
-
-    ## The following object is masked from 'package:sf':
-    ## 
-    ##     %>%
-
-    ## The following object is masked from 'package:forcats':
-    ## 
-    ##     %>%
-
-    ## The following object is masked from 'package:stringr':
-    ## 
-    ##     %>%
-
-    ## The following object is masked from 'package:purrr':
-    ## 
-    ##     %>%
-
-    ## The following object is masked from 'package:tidyr':
-    ## 
-    ##     %>%
-
-    ## The following object is masked from 'package:tibble':
-    ## 
-    ##     %>%
-
-    ## The following object is masked from 'package:plotly':
-    ## 
-    ##     %>%
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     %>%
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     options, strrep
-
-    ## Loading required package: topmodel
-
-    ## Loading required package: DEoptim
-
-    ## Loading required package: parallel
-
-    ## 
-    ## DEoptim package
-    ## Differential Evolution algorithm in R
-    ## Authors: D. Ardia, K. Mullen, B. Peterson and J. Ulrich
-
-    ## Loading required package: XML
-
-``` r
 library(dataRetrieval)
 library(cowplot)
 library(reshape2)
-```
-
-    ## 
-    ## Attaching package: 'reshape2'
-
-    ## The following object is masked from 'package:tidyr':
-    ## 
-    ##     smiths
-
-``` r
 library(EcoHydRology)
 library(magrittr)
-```
-
-    ## 
-    ## Attaching package: 'magrittr'
-
-    ## The following object is masked from 'package:operators':
-    ## 
-    ##     %>%
-
-    ## The following objects are masked from 'package:terra':
-    ## 
-    ##     extract, inset
-
-    ## The following object is masked from 'package:raster':
-    ## 
-    ##     extract
-
-    ## The following object is masked from 'package:purrr':
-    ## 
-    ##     set_names
-
-    ## The following object is masked from 'package:tidyr':
-    ## 
-    ##     extract
-
-``` r
 library(mapview)
 library(tidyr)
 library(readxl)
 library(janitor)
 ```
 
-    ## Warning: package 'janitor' was built under R version 4.1.3
-
-    ## 
-    ## Attaching package: 'janitor'
-
-    ## The following object is masked from 'package:operators':
-    ## 
-    ##     %>%
-
-    ## The following object is masked from 'package:terra':
-    ## 
-    ##     crosstab
-
-    ## The following object is masked from 'package:raster':
-    ## 
-    ##     crosstab
-
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     chisq.test, fisher.test
-
-## Bring in and Tidy Konza GW data
+## Konza Praire LTER Overview
 
 Konza map and backgorund here
 
-## 3. Tidy, gap-fill, QAQC data
+## Tidy, gap-fill, QAQC data
 
 In this section, we will perform some basic data cleaning operations to
 get our data ready for further analysis
@@ -440,71 +161,13 @@ summary(kgw)
 ``` r
 # from the summary, it appears that all of the actual chem data is in string format, so we need to convert to numeric
 kgw[,11:ncol(kgw)]<- lapply(kgw[,11:ncol(kgw)], as.numeric)
-```
 
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-    ## Warning in lapply(kgw[, 11:ncol(kgw)], as.numeric): NAs introduced by coercion
-
-``` r
 #now convert date from character to proper format and clean up column names
 kgw <- kgw %>% 
   mutate(date = lubridate::ymd(WLDate)) %>% 
   clean_names() %>% 
   dplyr::select(-wl_date)
-```
-
-    ## Warning: 3877 failed to parse.
-
-``` r
+  
 # now look at data and col types again
 head(kgw)
 ```

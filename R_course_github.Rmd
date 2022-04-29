@@ -1,16 +1,14 @@
 ---
-title: "Untitled"
+title: "R Project: Konza Groundwater Analysis"
 output: github_document
+author: Christopher Wheeler
 ---
-# Script purpose and organization 
-
-
 
 ## Prepare the R environment 
 
 We will load any relevant packages and set the default for our code visibility in the final report.
 
-```{r setup}
+```{r message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dataRetrieval)
 library(dplyr)
@@ -41,7 +39,7 @@ library(readxl)
 library(janitor)
 ```
 
-## Bring in and Tidy Konza GW data
+## Konza Praire LTER Overview
 
 Konza map and backgorund here
 
@@ -50,7 +48,7 @@ Konza map and backgorund here
 
 ```
 
-## 3. Tidy, gap-fill, QAQC data
+## Tidy, gap-fill, QAQC data
 
 In this section, we will perform some basic data cleaning operations to get our data ready for further analysis
 
@@ -61,7 +59,9 @@ kgw <- read_csv("kgw.csv", col_types = cols(WLDate = col_character()))
 head(kgw)
 names(kgw)
 summary(kgw)
+```
 
+```{r warning = FALSE}
 # from the summary, it appears that all of the actual chem data is in string format, so we need to convert to numeric
 kgw[,11:ncol(kgw)]<- lapply(kgw[,11:ncol(kgw)], as.numeric)
 
