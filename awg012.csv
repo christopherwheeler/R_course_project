@@ -1,0 +1,38 @@
+Loc,Trans,PlotID,AbName,FullName,Elevation,Latitude,Longitude
+1_1,1,1,AL,Alluvium Colluvium,368.228,39.087296,-96.583698
+1_3,1,3,Eis,undifferentiated Eiss Limestone Member of the Bader Limestone formation,371.884,39.087687,-96.583374
+1_3,1,3,Mor,Morrill Limestone member of the Beattie Limestone formation,371.891,39.087671,-96.583373
+1_4,1,4,AL,Alluvium Colluvium,365.19,39.087213,-96.583944
+1_6,1,6,Eis,undifferentiated Eiss Limestone Member of the Bader Limestone formation,372.214,39.086742,-96.584815
+1_6,1,6,Mor,Morrill Limestone member of the Beattie Limestone formation,372.184,39.086735,-96.584806
+2_1,2,1,AL,Alluvium Colluvium,368.345,39.08666,-96.583177
+2_3,2,3,Eis,undifferentiated Eiss Limestone Member of the Bader Limestone formation,376.463,39.087052,-96.582854
+2_3,2,3,Mor,Morrill Limestone member of the Beattie Limestone formation,376.448,39.087036,-96.582847
+2_4,2,4,Mor,Morrill Limestone member of the Beattie Limestone formation,366.231,39.086599,-96.583381
+2_5,2,5,Mor,Morrill Limestone member of the Beattie Limestone formation,368.277,39.086448,-96.583578
+2_6,2,6,Eis,undifferentiated Eiss Limestone Member of the Bader Limestone formation,372.375,39.086125,-96.584125
+2_6,2,6,Mor,Morrill Limestone member of the Beattie Limestone formation,372.323,39.086126,-96.584108
+3_1,3,1,AL,Alluvium Colluvium,369.111,39.085749,-96.58311
+3_2,3,2,Eis,undifferentiated Eiss Limestone Member of the Bader Limestone formation,372.319,39.085775,-96.582742
+3_2,3,2,Mor,Morrill Limestone member of the Beattie Limestone formation,372.322,39.085765,-96.582743
+3_3,3,3,Eis,undifferentiated Eiss Limestone Member of the Bader Limestone formation,375.756,39.085822,-96.582474
+3_3,3,3,Eis,undifferentiated Eiss Limestone Member of the Bader Limestone formation,375.816,39.085823,-96.58247
+3_3,3,3,Mor,Morrill Limestone member of the Beattie Limestone formation,375.801,39.085799,-96.582463
+3_4,3,4,AL,Alluvium Colluvium,368.624,39.08562,-96.5831
+3_5,3,5,Mor,Morrill Limestone member of the Beattie Limestone formation,370.588,39.085522,-96.583306
+3_5_1,3,51,Mor,Morrill Limestone member of the Beattie Limestone formation,374.803,39.084922,-96.583624
+3_6,3,6,Eis,undifferentiated Eiss Limestone Member of the Bader Limestone formation,374.149,39.085506,-96.583828
+3_6,3,6,Mor,Morrill Limestone member of the Beattie Limestone formation,374.164,39.085495,-96.583825
+3_7,3,7,Eiss,undifferentiated Eiss Limestone Member of the Bader Limestone formation,393.389,39.085617,-96.585509
+3_7,3,7,Mor,Morrill Limestone member of the Beattie Limestone formation,393.438,39.085622,-96.58552
+4_1,4,1,Mid,Middleburg Limestone member of the Bader Limestone Group,375.756,39.085008,-96.582017
+4_2,4,2,Eis1,lower Eiss Limestone Member of the Bader Limestone formation,374.6,39.084887,-96.582372
+4_2,4,2,Eis2,upper Eiss Limestone Member of the Bader Limestone formation,374.507,39.084875,-96.58239
+4_2,4,2,Mor,Morrill Limestone member of the Beattie Limestone formation,374.651,39.084896,-96.582359
+4_4,4,4,Stearns,unnamed limestone within the Stearns Shale formation,373.583,39.084719,-96.582783
+4_5,4,5,Stearns,unnamed limestone within the Stearns Shale formation,371.477,39.084823,-96.583076
+4_6,4,6,Eis1,lower Eiss Limestone Member of the Bader Limestone formation,375.783,39.084776,-96.583655
+4_6,4,6,Eis2,upper Eiss Limestone Member of the Bader Limestone formation,375.795,39.084781,-96.583664
+4_6,4,6,Mor,Morrill Limestone member of the Beattie Limestone formation,375.816,39.084768,-96.583644
+4_7,4,7,Mor,Morrill Limestone member of the Beattie Limestone formation,400.385,39.084891,-96.585472
+,,,Weir,N04d-corner,364.984,39.087467,-96.584446
