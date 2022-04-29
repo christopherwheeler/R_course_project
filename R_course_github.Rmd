@@ -1,0 +1,77 @@
+---
+title: "Untitled"
+output: github_document
+---
+# Script purpose and organization 
+
+
+
+## Prepare the R environment 
+
+We will load any relevant packages and set the default for our code visibility in the final report.
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+library(dataRetrieval)
+library(dplyr)
+library(zoo)
+library(lubridate)
+library(ggplot2)
+library(plotly)
+library(cowplot)
+library(tidyverse)
+library(fs)
+library(Rcpp)
+library(sp)
+library(raster)
+library(rgdal)
+library(rasterVis)
+library(sf)
+library(tidyverse)
+library(dplyr)
+library(EcoHydRology)
+library(dataRetrieval)
+library(cowplot)
+library(reshape2)
+library(EcoHydRology)
+library(magrittr)
+library(mapview)
+library(tidyr)
+library(readxl)
+library(janitor)
+```
+
+## Bring in and Tidy Konza GW data
+
+Konza map and backgorund here
+
+```{r konza_map}
+
+
+```
+
+## 3. Tidy, gap-fill, QAQC data
+
+In this section, we will perform some basic data cleaning operations to get our data ready for further analysis
+
+```{r data wrangling and tidying}
+
+# bring in and examine konza groundwater data set
+kgw <- read_csv("kgw.csv", col_types = cols(WLDate = col_character()))
+head(kgw)
+names(kgw)
+summary(kgw)
+
+# from the summary, it appears that all of the actual chem data is in string format, so we need to convert to numeric
+kgw[,11:ncol(kgw)]<- lapply(kgw[,11:ncol(kgw)], as.numeric)
+
+#now convert date from character to proper format and clean up column names
+kgw <- kgw %>% 
+  mutate(date = lubridate::ymd(WLDate)) %>% 
+  clean_names() %>% 
+  dplyr::select(-wl_date)
+  
+# now look at data and col types again
+head(kgw)
+
+```
