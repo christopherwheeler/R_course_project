@@ -329,7 +329,7 @@ ggplot(kgw_geosub, aes(no3_n, fill = geology)) +
     ## Warning: Removed 5218 rows containing non-finite values (stat_density).
 
 ![](R_course_github_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
-Below is a QQ plot for all observations of Na1+
+Below is a QQ plot for all observations of So4
 
 Now bring in second data set with high frequency GWl measurements on
 well subset
@@ -361,3 +361,35 @@ stics
 ``` r
 #animated maps 
 ```
+
+## Evaluation of Statistical Tests
+
+Below is making a stats dataframe form the `kgw_chem` numeric data frame
+
+``` r
+# start data frame with column of means
+stat_kgw <- data.frame(colMeans(kgw_chem,na.rm=TRUE))
+
+# rename column
+stat_kgw <- stat_kgw %>% 
+  rename(mean = names(stat_kgw))
+
+# add median
+stat_kgw$median<-sapply(kgw_chem, function(med)  meds = median(med,na.rm=TRUE))
+
+# add standard deviations
+stat_kgw$sd<-sapply(kgw_chem, function(std)  sds = sd(std,na.rm=TRUE))
+
+# add variance
+stat_kgw$var<-sapply(kgw_chem, function(vr)  vars = var(vr,na.rm=TRUE))
+
+# transpose such that stats are row names and analytes are cols
+stat_kgw_mx <- as.matrix(stat_kgw)
+stat_kgw_mx <- t(stat_kgw_mx)
+stat_kgw <- as.data.frame(stat_kgw_mx)
+
+View(stat_kgw)
+```
+
+We can draw a few basic conclusions from the stats we have just
+generated…
