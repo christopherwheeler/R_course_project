@@ -89,7 +89,4 @@ cross plot
 plot(kgw_chem_subset)
 
 ```
-From this cross plot, a few correlations stand out to me a potentiall signifincant. 
-
-
-
+From this cross plot, a few correlations stand out to me a potentially significant. 
