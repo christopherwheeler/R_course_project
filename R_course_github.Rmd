@@ -3,11 +3,8 @@ title: "R Project: Konza Groundwater Analysis"
 output: github_document
 author: Christopher Wheeler
 ---
-
 ## Prepare the R environment 
-
 We will load any relevant packages and set the default for our code visibility in the final report.
-
 ```{r message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dataRetrieval)
@@ -40,27 +37,21 @@ library(janitor)
 ```
 
 ## Konza Praire LTER Overview
-
-Konza map and backgorund here
-
+Konza Prairie Biological Station (Konza) was designated as a Long-term Ecological Research Site (LTER) by NSF in 1981. In the 1990s, Dr. Gwen Macpherson coordinated the installation of multiple wells in the N04D watershed at Konza. All that historical groundwater data is accessible via the Konza Long-term Ecological Research Site webpage. Data include GWL measurements, as well as water quality data for many analytes This data I am going to analyze come from one of the many subwatersheds known as N04D. This watershed is grazed by bison for most of the year, and is subject to a controlled burn very four years.Below is a map of the entire site. 
 ```{r}
 
 
 ```
-
 ## Tidy, gap-fill, QAQC data
-
 In this section, we will perform some basic data cleaning operations to get our data ready for further analysis
-
 ```{r}
-
 # bring in and examine konza groundwater data set
 kgw <- read_csv("kgw.csv", col_types = cols(WLDate = col_character()))
 head(kgw)
 names(kgw)
 summary(kgw)
 ```
-
+Below are some steps I used to tidy the raw data frame.
 ```{r warning = FALSE}
 # from the summary, it appears that all of the actual chem data is in string format, so we need to convert to numeric
 kgw[,11:ncol(kgw)]<- lapply(kgw[,11:ncol(kgw)], as.numeric)
@@ -75,3 +66,30 @@ kgw <- kgw %>%
 summary(kgw)
 
 ```
+Now that the data frame is cleaned up, I can start an exploratory analysis. As we learned in class, a good first pass at this is to simply create a cross plot of all the variables to check for any obvious correlations. When I first tried using plot with the whole data frame, I got an error saying that the margins were too large. I next tried to use a subsetted data frame with just the chemistry
+```{r message = FALSE, warning = FALSE}
+# subset original df to one with just chemical concentrations
+
+all_na <- function(x) any(!is.na(x))
+
+kgw_2 <- kgw %>% 
+  select_if(all_na)
+
+kgw_chem <- kgw_2 %>% 
+  dplyr::select(-conduct, -date, -datacode, -rectype, -location, -trans, -plot, -geology, -recyear, -elevation, -sw_date)
+
+names(kgw_chem)
+
+kgw_chem_subset <- kgw_chem %>% 
+  dplyr::select(na1, na2, ca1, ca2, nh4_n, no3_n, alkalinity, temp, mg1, cl)
+```
+cross plot
+```{r out.width = '500%'}
+
+plot(kgw_chem_subset)
+
+```
+From this cross plot, a few correlations stand out to me a potentiall signifincant. 
+
+
+

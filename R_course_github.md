@@ -40,7 +40,16 @@ library(janitor)
 
 ## Konza Praire LTER Overview
 
-Konza map and backgorund here
+Konza Prairie Biological Station (Konza) was designated as a Long-term
+Ecological Research Site (LTER) by NSF in 1981. In the 1990s, Dr. Gwen
+Macpherson coordinated the installation of multiple wells in the N04D
+watershed at Konza. All that historical groundwater data is accessible
+via the Konza Long-term Ecological Research Site webpage. Data include
+GWL measurements, as well as water quality data for many analytes This
+data I am going to analyze come from one of the many subwatersheds known
+as N04D. This watershed is grazed by bison for most of the year, and is
+subject to a controlled burn very four years.Below is a map of the
+entire site.
 
 ## Tidy, gap-fill, QAQC data
 
@@ -158,6 +167,8 @@ summary(kgw)
     ##                                                                             
     ## 
 
+Below are some steps I used to tidy the raw data frame.
+
 ``` r
 # from the summary, it appears that all of the actual chem data is in string format, so we need to convert to numeric
 kgw[,11:ncol(kgw)]<- lapply(kgw[,11:ncol(kgw)], as.numeric)
@@ -244,3 +255,45 @@ summary(kgw)
     ##  3rd Qu.:0.039   3rd Qu.:565.00   3rd Qu.:2004-02-28  
     ##  Max.   :0.181   Max.   :728.00   Max.   :2007-11-18  
     ##  NA's   :6311    NA's   :6955     NA's   :4140
+
+Now that the data frame is cleaned up, I can start an exploratory
+analysis. As we learned in class, a good first pass at this is to simply
+create a cross plot of all the variables to check for any obvious
+correlations. When I first tried using plot with the whole data frame, I
+got an error saying that the margins were too large. I next tried to use
+a subsetted data frame with just the chemistry
+
+``` r
+# subset original df to one with just chemical concentrations
+
+all_na <- function(x) any(!is.na(x))
+
+kgw_2 <- kgw %>% 
+  select_if(all_na)
+
+kgw_chem <- kgw_2 %>% 
+  dplyr::select(-conduct, -date, -datacode, -rectype, -location, -trans, -plot, -geology, -recyear, -elevation, -sw_date)
+
+names(kgw_chem)
+```
+
+    ##  [1] "na1"        "na2"        "k1"         "k2"         "li"        
+    ##  [6] "nh4_n"      "ca1"        "ca2"        "mg1"        "mg2"       
+    ## [11] "sr"         "ba"         "so4"        "f"          "cl"        
+    ## [16] "no3_n"      "alkalinity" "p_h1"       "ddb"        "p_h2"      
+    ## [21] "temp"       "si1"        "si2"        "b"
+
+``` r
+kgw_chem_subset <- kgw_chem %>% 
+  dplyr::select(na1, na2, ca1, ca2, nh4_n, no3_n, alkalinity, temp, mg1, cl)
+```
+
+cross plot
+
+``` r
+plot(kgw_chem_subset)
+```
+
+<img src="R_course_github_files/figure-gfm/unnamed-chunk-6-1.png" width="500%" />
+From this cross plot, a few correlations stand out to me a potentiall
+signifincant.
