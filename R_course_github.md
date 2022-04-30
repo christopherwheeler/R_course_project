@@ -288,8 +288,8 @@ cross plot
 plot(kgw_chem_subset)
 ```
 
-<img src="R_course_github_files/figure-gfm/unnamed-chunk-6-1.png" width="200%" />
-From this cross plot, a few correlations stand out to me a potentially
+![](R_course_github_files/figure-gfm/unnamed-chunk-6-1.png)<!-- --> From
+this cross plot, a few correlations stand out to me a potentially
 significant…
 
 Additionally, as a first pass I want to look at differences among wells

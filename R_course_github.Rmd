@@ -76,7 +76,7 @@ kgw_chem_subset <- kgw_chem %>%
   dplyr::select(na1, na2, ca1, ca2, nh4_n, no3_n, alkalinity, temp, mg1, cl)
 ```
 cross plot
-```{r out.width = '200%'}
+```{r}
 plot(kgw_chem_subset)
 ```
 From this cross plot, a few correlations stand out to me a potentially significant... 
