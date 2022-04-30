@@ -152,6 +152,6 @@ stat_kgw_mx <- as.matrix(stat_kgw)
 stat_kgw_mx <- t(stat_kgw_mx)
 stat_kgw <- as.data.frame(stat_kgw_mx)
 
-View(stat_kgw)
+stat_kgw
 ```
 We can draw a few basic conclusions from the stats we have just generated. One is that for all analytes except ba, the median values are smaller than the mean values. This indicates a right skewed or positive skewed distribution. This is very common with environmental data, and water quality data in particular. 
