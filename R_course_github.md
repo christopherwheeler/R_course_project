@@ -9,14 +9,11 @@ visibility in the final report.
 
 ``` r
 knitr::opts_chunk$set(echo = TRUE)
-library(dataRetrieval)
-library(dplyr)
 library(zoo)
 library(lubridate)
 library(ggplot2)
 library(plotly)
 library(cowplot)
-library(tidyverse)
 library(fs)
 library(Rcpp)
 library(sp)
@@ -26,13 +23,10 @@ library(rasterVis)
 library(sf)
 library(tidyverse)
 library(dplyr)
-library(EcoHydRology)
 library(dataRetrieval)
 library(cowplot)
 library(reshape2)
-library(EcoHydRology)
 library(magrittr)
-library(mapview)
 library(tidyr)
 library(readxl)
 library(janitor)
@@ -294,11 +288,11 @@ cross plot
 plot(kgw_chem_subset)
 ```
 
-<img src="R_course_github_files/figure-gfm/unnamed-chunk-6-1.png" width="250%" />
+<img src="R_course_github_files/figure-gfm/unnamed-chunk-6-1.png" width="200%" />
 From this cross plot, a few correlations stand out to me a potentially
 significant…
 
-Additionally, as a first pass I want to look at differnces among wells
+Additionally, as a first pass I want to look at differences among wells
 screened in different geologic units. First I need to do some
 subsetting.
 
@@ -313,12 +307,57 @@ kgw_geosub <- kgw_2[kgw_2$geology == 'AL' | kgw_2$geology == 'AL' | kgw_2$geolog
 Here is plot
 
 ``` r
-ggplot(kgw_geosub, aes(x = factor(geology), y = no3_n)) + 
+ggplot(kgw_geosub, aes(x = factor(geology), y = no3_n, fill = geology)) + 
   geom_boxplot() + 
   theme_cowplot() + 
-  xlab("Geologic Unit")
+  xlab("Geologic Unit") + 
+  theme(legend.position="none") + 
+  ylab(bquote(NO[3]^" -")) 
 ```
 
-    ## Warning: Removed 5218 rows containing non-finite values (stat_boxplot).
-
 ![](R_course_github_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+Below is density plot
+
+``` r
+ggplot(kgw_geosub, aes(no3_n, fill = geology)) + 
+  geom_density(alpha = 0.3) + 
+  theme_cowplot() + 
+  xlab(bquote(NO[3]^" -")) + 
+  ylab("Density")
+```
+
+    ## Warning: Removed 5218 rows containing non-finite values (stat_density).
+
+![](R_course_github_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+Below is a QQ plot for all observations of Na1+
+
+Now bring in second data set with high frequency GWl measurements on
+well subset
+
+``` r
+agw <- read_csv("agw.csv") %>% 
+  rename(datetime = WLDate) %>% 
+  mutate(datetime = lubridate::mdy_hms(datetime)) %>% 
+  clean_names()
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   Datacode = col_character(),
+    ##   Rectype = col_double(),
+    ##   Recyear = col_double(),
+    ##   WLDate = col_character(),
+    ##   Wellname = col_character(),
+    ##   WL = col_double(),
+    ##   GWtemp = col_double(),
+    ##   BLtemp = col_character(),
+    ##   Comments = col_character()
+    ## )
+
+At the end I want three animated maps: gw levels, pulse storage, and
+stics
+
+``` r
+#animated maps 
+```

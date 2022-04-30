@@ -7,14 +7,11 @@ author: Christopher Wheeler
 We will load any relevant packages and set the default for our code visibility in the final report.
 ```{r message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(dataRetrieval)
-library(dplyr)
 library(zoo)
 library(lubridate)
 library(ggplot2)
 library(plotly)
 library(cowplot)
-library(tidyverse)
 library(fs)
 library(Rcpp)
 library(sp)
@@ -24,18 +21,14 @@ library(rasterVis)
 library(sf)
 library(tidyverse)
 library(dplyr)
-library(EcoHydRology)
 library(dataRetrieval)
 library(cowplot)
 library(reshape2)
-library(EcoHydRology)
 library(magrittr)
-library(mapview)
 library(tidyr)
 library(readxl)
 library(janitor)
 ```
-
 ## Konza Praire LTER Overview
 Konza Prairie Biological Station (Konza) was designated as a Long-term Ecological Research Site (LTER) by NSF in 1981. In the 1990s, Dr. Gwen Macpherson coordinated the installation of multiple wells in the N04D watershed at Konza. All that historical groundwater data is accessible via the Konza Long-term Ecological Research Site webpage. Data include GWL measurements, as well as water quality data for many analytes This data I am going to analyze come from one of the many subwatersheds known as N04D. This watershed is grazed by bison for most of the year, and is subject to a controlled burn very four years.Below is a map of the entire site. 
 ```{r}
@@ -83,12 +76,12 @@ kgw_chem_subset <- kgw_chem %>%
   dplyr::select(na1, na2, ca1, ca2, nh4_n, no3_n, alkalinity, temp, mg1, cl)
 ```
 cross plot
-```{r out.width = '250%'}
+```{r out.width = '200%'}
 plot(kgw_chem_subset)
 ```
 From this cross plot, a few correlations stand out to me a potentially significant... 
 
-Additionally, as a first pass I want to look at differnces among wells screened in different geologic units. First I need to do some subsetting.
+Additionally, as a first pass I want to look at differences among wells screened in different geologic units. First I need to do some subsetting.
 ```{r}
 kgw_2 <- kgw_2 %>% 
   mutate(geology = as_factor(geology))
@@ -97,9 +90,44 @@ kgw_geosub <- kgw_2[kgw_2$geology == 'AL' | kgw_2$geology == 'AL' | kgw_2$geolog
                  | kgw_2$geology == 'Eis 1' | kgw_2$geology == 'Eis 2'  | kgw_2$geology == '1Mor'| kgw_2$geology == 'Mor', ]
 ```
 Here is plot
-```{r}
-ggplot(kgw_geosub, aes(x = factor(geology), y = no3_n)) + 
+```{r warning = FALSE}
+ggplot(kgw_geosub, aes(x = factor(geology), y = no3_n, fill = geology)) + 
   geom_boxplot() + 
   theme_cowplot() + 
-  xlab("Geologic Unit")
+  xlab("Geologic Unit") + 
+  theme(legend.position="none") + 
+  ylab(bquote(NO[3]^" -")) 
 ```
+Below is density plot
+```{r}
+ggplot(kgw_geosub, aes(no3_n, fill = geology)) + 
+  geom_density(alpha = 0.3) + 
+  theme_cowplot() + 
+  xlab(bquote(NO[3]^" -")) + 
+  ylab("Density")
+
+```
+Below is a QQ plot for all observations of Na1+ 
+```{r}
+
+
+```
+Now bring in second data set with high frequency GWl measurements on well subset
+```{r warning = FALSE}
+agw <- read_csv("agw.csv") %>% 
+  rename(datetime = WLDate) %>% 
+  mutate(datetime = lubridate::mdy_hms(datetime)) %>% 
+  clean_names()
+
+```
+
+
+At the end I want three animated maps: gw levels, pulse storage, and stics
+```{r}
+#animated maps 
+
+
+
+```
+
+
