@@ -294,7 +294,7 @@ cross plot
 plot(kgw_chem_subset)
 ```
 
-<img src="R_course_github_files/figure-gfm/unnamed-chunk-6-1.png" width="500%" />
+<img src="R_course_github_files/figure-gfm/unnamed-chunk-6-1.png" width="250%" />
 From this cross plot, a few correlations stand out to me a potentially
 significant…
 
