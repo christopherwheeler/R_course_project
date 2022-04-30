@@ -392,4 +392,7 @@ View(stat_kgw)
 ```
 
 We can draw a few basic conclusions from the stats we have just
-generated…
+generated. One is that for all analytes except ba, the median values are
+smaller than the mean values. This indicates a right skewed or positive
+skewed distribution. This is very common with environmental data, and
+water quality data in particular.
