@@ -296,4 +296,29 @@ plot(kgw_chem_subset)
 
 <img src="R_course_github_files/figure-gfm/unnamed-chunk-6-1.png" width="500%" />
 From this cross plot, a few correlations stand out to me a potentially
-significant.
+significant…
+
+Additionally, as a first pass I want to look at differnces among wells
+screened in different geologic units. First I need to do some
+subsetting.
+
+``` r
+kgw_2 <- kgw_2 %>% 
+  mutate(geology = as_factor(geology))
+
+kgw_geosub <- kgw_2[kgw_2$geology == 'AL' | kgw_2$geology == 'AL' | kgw_2$geology == 'Eis'   
+                 | kgw_2$geology == 'Eis 1' | kgw_2$geology == 'Eis 2'  | kgw_2$geology == '1Mor'| kgw_2$geology == 'Mor', ]
+```
+
+Here is plot
+
+``` r
+ggplot(kgw_geosub, aes(x = factor(geology), y = no3_n)) + 
+  geom_boxplot() + 
+  theme_cowplot() + 
+  xlab("Geologic Unit")
+```
+
+    ## Warning: Removed 5218 rows containing non-finite values (stat_boxplot).
+
+![](R_course_github_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->

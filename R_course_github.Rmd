@@ -64,7 +64,6 @@ kgw <- kgw %>%
   
 # now look at data and col types again
 summary(kgw)
-
 ```
 Now that the data frame is cleaned up, I can start an exploratory analysis. As we learned in class, a good first pass at this is to simply create a cross plot of all the variables to check for any obvious correlations. When I first tried using plot with the whole data frame, I got an error saying that the margins were too large. I next tried to use a subsetted data frame with just the chemistry
 ```{r message = FALSE, warning = FALSE}
@@ -85,8 +84,22 @@ kgw_chem_subset <- kgw_chem %>%
 ```
 cross plot
 ```{r out.width = '500%'}
-
 plot(kgw_chem_subset)
-
 ```
-From this cross plot, a few correlations stand out to me a potentially significant. 
+From this cross plot, a few correlations stand out to me a potentially significant... 
+
+Additionally, as a first pass I want to look at differnces among wells screened in different geologic units. First I need to do some subsetting.
+```{r}
+kgw_2 <- kgw_2 %>% 
+  mutate(geology = as_factor(geology))
+
+kgw_geosub <- kgw_2[kgw_2$geology == 'AL' | kgw_2$geology == 'AL' | kgw_2$geology == 'Eis'   
+                 | kgw_2$geology == 'Eis 1' | kgw_2$geology == 'Eis 2'  | kgw_2$geology == '1Mor'| kgw_2$geology == 'Mor', ]
+```
+Here is plot
+```{r}
+ggplot(kgw_geosub, aes(x = factor(geology), y = no3_n)) + 
+  geom_boxplot() + 
+  theme_cowplot() + 
+  xlab("Geologic Unit")
+```
