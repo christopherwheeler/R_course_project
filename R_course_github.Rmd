@@ -165,7 +165,7 @@ for(i in 1:ncol(kgw_chem_subset)) {
 
 }
 ```
-# Shapiro-Wilkes
+## Shapiro-Wilkes
 Looking at the histograms above, it appears that temperature looks the most normal, while ammonia looks least normal. I will use Shapiro-Wilkes on both of these distributions to test this hypothesis. 
 ```{r warning = FALSE}
 rm(stat_kgw_mx)
@@ -184,8 +184,18 @@ for(i in 1:ncol(stat_kgw)){
   stat_kgw[6, i] <- p_val
 }
 
+head(stat_kgw)
 ```
-# Kolmogorov-Smirnov Test
+## Kolmogorov-Smirnov Test
+```{r}
+
+
+
+
+
+```
+
+
 
 
 
