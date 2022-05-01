@@ -1,4 +1,5 @@
-R Project: Konza Groundwater Analysis
+R Project: Konza groundwater analysis; analysis of storage and surface
+flow intermittency
 ================
 Christopher Wheeler
 
@@ -30,6 +31,8 @@ library(magrittr)
 library(tidyr)
 library(readxl)
 library(janitor)
+library(EnvStats)
+library(fs)
 ```
 
 ## Konza Praire LTER Overview
@@ -42,8 +45,55 @@ via the Konza Long-term Ecological Research Site webpage. Data include
 GWL measurements, as well as water quality data for many analytes This
 data I am going to analyze come from one of the many subwatersheds known
 as N04D. This watershed is grazed by bison for most of the year, and is
-subject to a controlled burn very four years.Below is a map of the
-entire site.
+subject to a controlled burn very four years. We will begin by looking
+at groundwater chemisty, then move to an examination of how well levels
+and storage are related to intermittency in surface flow. The subsurface
+geology at konza consists of a series of thinly interbedded limestones
+and mudstones, with water movement largely within secondary porosity of
+the limestone layers. Below is a map of the entire site for context.
+
+``` r
+# Bring in `konza_boundary` shapefiles
+konza_boundary <- st_read(
+  "GIS002/GIS002.shp")
+```
+
+    ## Reading layer `GIS002' from data source 
+    ##   `C:\Users\cwhee\Desktop\R_Directory\R_course_project\GIS002\GIS002.shp' 
+    ##   using driver `ESRI Shapefile'
+    ## Simple feature collection with 1 feature and 8 fields
+    ## Geometry type: POLYGON
+    ## Dimension:     XY
+    ## Bounding box:  xmin: 706198.9 ymin: 4326829 xmax: 712910.3 ymax: 4334740
+    ## Projected CRS: NAD83 / UTM zone 14N
+
+``` r
+#Bring in `konza_streams` shapefile
+konza_streams <- st_read(
+  "GIS210/GIS210.shp")
+```
+
+    ## Reading layer `GIS210' from data source 
+    ##   `C:\Users\cwhee\Desktop\R_Directory\R_course_project\GIS210\GIS210.shp' 
+    ##   using driver `ESRI Shapefile'
+    ## Simple feature collection with 96 features and 4 fields
+    ## Geometry type: LINESTRING
+    ## Dimension:     XY
+    ## Bounding box:  xmin: 706268.8 ymin: 4326846 xmax: 712897.1 ymax: 4334446
+    ## Projected CRS: NAD83 / UTM zone 14N
+
+``` r
+ggplot() + 
+  geom_sf(data = konza_boundary) + 
+  geom_sf(data = konza_streams, color = "blue") + 
+  theme_cowplot() +
+  ggtitle("Konza Site Map") + 
+  xlab("Longitude") + 
+  ylab("Latitude") + 
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+![](R_course_github_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 ## Data Tidying and First Look
 
@@ -215,6 +265,8 @@ plot(kgw_chem_subset)
 ![](R_course_github_files/figure-gfm/unnamed-chunk-6-1.png)<!-- --> From
 this cross plot, a few correlations stand out to me a potentially
 significant…
+
+## Exploration of the chemistry of wells screened in different units.
 
 Additionally, as a first pass I want to look at differences among wells
 screened in different geologic units. First I need to do some
@@ -454,44 +506,7 @@ for(i in 1:ncol(stat_kgw)){
   stat_kgw[8, i] <- p_value
   
 }
-head(stat_kgw)
 ```
-
-    ##                    na1          na2           k1           k2           li
-    ## mean      6.251794e+00 5.796538e+00 9.232520e-01 8.998024e-01 2.221749e-02
-    ## median    4.840000e+00 5.080000e+00 8.300000e-01 9.000000e-01 2.100000e-02
-    ## sd        3.879375e+00 2.384605e+00 5.073806e-01 2.919556e-01 9.935170e-03
-    ## var       1.504955e+01 5.686340e+00 2.574350e-01 8.523806e-02 9.870761e-05
-    ## shapiro_w 6.741088e-01 8.057205e-01 5.842251e-01 8.737659e-01 9.669737e-01
-    ## shapiro_p 1.827056e-29 3.509644e-37 1.316876e-32 2.149063e-31 9.604846e-17
-    ##                 nh4_n          ca1          ca2          mg1          mg2
-    ## mean      0.084230769 8.575389e+01 8.984977e+01 1.977890e+01 2.117420e+01
-    ## median    0.075000000 8.790000e+01 9.080000e+01 1.780000e+01 2.000000e+01
-    ## sd        0.036019226 1.047690e+01 1.193762e+01 6.947848e+00 4.834154e+00
-    ## var       0.001297385 1.097654e+02 1.425067e+02 4.827259e+01 2.336905e+01
-    ## shapiro_w 0.952313534 9.625061e-01 9.424220e-01 8.295731e-01 9.422584e-01
-    ## shapiro_p 0.262542587 1.199668e-09 3.026100e-22 2.501892e-22 2.769038e-22
-    ##                     sr           ba          so4            f           cl
-    ## mean      1.056342e+00 8.877719e-02 3.077779e+01 4.595488e-01 1.968225e+00
-    ## median    9.300000e-01 9.300000e-02 2.880000e+01 4.300000e-01 1.900000e+00
-    ## sd        4.542451e-01 3.249599e-02 2.011607e+01 1.489686e-01 7.378180e-01
-    ## var       2.063386e-01 1.055989e-03 4.046561e+02 2.219166e-02 5.443754e-01
-    ## shapiro_w 7.363471e-01 6.153736e-01 6.315627e-01 9.166624e-01 9.300962e-01
-    ## shapiro_p 1.746291e-41 3.801785e-47 6.999153e-52 6.227605e-28 9.837045e-28
-    ##                  no3_n   alkalinity         p_h1         ddb         p_h2
-    ## mean      9.545375e-02 3.551662e+02 7.751838e+00 7.683137255 7.255221e+00
-    ## median    7.500000e-02 3.540000e+02 7.740000e+00 7.770000000 7.220000e+00
-    ## sd        1.077538e-01 2.633520e+01 2.460419e-01 0.225915827 3.756583e-01
-    ## var       1.161089e-02 6.935430e+02 6.053662e-02 0.051037961 1.411192e-01
-    ## shapiro_w 6.321183e-01 9.732590e-01 9.932095e-01 0.922908539 9.340771e-01
-    ## shapiro_p 4.664027e-44 1.680673e-17 3.525648e-07 0.002689781 5.053191e-14
-    ##                   temp         si1          si2            b
-    ## mean      1.694700e+01 5.817440000 5.706743e+00 3.352045e-02
-    ## median    1.680000e+01 5.760000000 5.700000e+00 3.300000e-02
-    ## sd        4.199704e+00 0.716783703 1.236166e+00 1.298286e-02
-    ## var       1.763752e+01 0.513778877 1.528107e+00 1.685545e-04
-    ## shapiro_w 9.623978e-01 0.963100330 8.048607e-01 8.695358e-01
-    ## shapiro_p 8.956688e-10 0.001734828 3.880320e-37 8.368607e-32
 
 Remarkably, results of the K-S test contrast quite strongly with
 Shapiro. According to K-S, all analytes show a normal distribution
@@ -523,44 +538,7 @@ for(i in 1:ncol(stat_kgw)){
   stat_kgw[10,i]<-p_value_log
   
 }
-head(stat_kgw)
 ```
-
-    ##                    na1          na2           k1           k2           li
-    ## mean      6.251794e+00 5.796538e+00 9.232520e-01 8.998024e-01 2.221749e-02
-    ## median    4.840000e+00 5.080000e+00 8.300000e-01 9.000000e-01 2.100000e-02
-    ## sd        3.879375e+00 2.384605e+00 5.073806e-01 2.919556e-01 9.935170e-03
-    ## var       1.504955e+01 5.686340e+00 2.574350e-01 8.523806e-02 9.870761e-05
-    ## shapiro_w 6.741088e-01 8.057205e-01 5.842251e-01 8.737659e-01 9.669737e-01
-    ## shapiro_p 1.827056e-29 3.509644e-37 1.316876e-32 2.149063e-31 9.604846e-17
-    ##                 nh4_n          ca1          ca2          mg1          mg2
-    ## mean      0.084230769 8.575389e+01 8.984977e+01 1.977890e+01 2.117420e+01
-    ## median    0.075000000 8.790000e+01 9.080000e+01 1.780000e+01 2.000000e+01
-    ## sd        0.036019226 1.047690e+01 1.193762e+01 6.947848e+00 4.834154e+00
-    ## var       0.001297385 1.097654e+02 1.425067e+02 4.827259e+01 2.336905e+01
-    ## shapiro_w 0.952313534 9.625061e-01 9.424220e-01 8.295731e-01 9.422584e-01
-    ## shapiro_p 0.262542587 1.199668e-09 3.026100e-22 2.501892e-22 2.769038e-22
-    ##                     sr           ba          so4            f           cl
-    ## mean      1.056342e+00 8.877719e-02 3.077779e+01 4.595488e-01 1.968225e+00
-    ## median    9.300000e-01 9.300000e-02 2.880000e+01 4.300000e-01 1.900000e+00
-    ## sd        4.542451e-01 3.249599e-02 2.011607e+01 1.489686e-01 7.378180e-01
-    ## var       2.063386e-01 1.055989e-03 4.046561e+02 2.219166e-02 5.443754e-01
-    ## shapiro_w 7.363471e-01 6.153736e-01 6.315627e-01 9.166624e-01 9.300962e-01
-    ## shapiro_p 1.746291e-41 3.801785e-47 6.999153e-52 6.227605e-28 9.837045e-28
-    ##                  no3_n   alkalinity         p_h1         ddb         p_h2
-    ## mean      9.545375e-02 3.551662e+02 7.751838e+00 7.683137255 7.255221e+00
-    ## median    7.500000e-02 3.540000e+02 7.740000e+00 7.770000000 7.220000e+00
-    ## sd        1.077538e-01 2.633520e+01 2.460419e-01 0.225915827 3.756583e-01
-    ## var       1.161089e-02 6.935430e+02 6.053662e-02 0.051037961 1.411192e-01
-    ## shapiro_w 6.321183e-01 9.732590e-01 9.932095e-01 0.922908539 9.340771e-01
-    ## shapiro_p 4.664027e-44 1.680673e-17 3.525648e-07 0.002689781 5.053191e-14
-    ##                   temp         si1          si2            b
-    ## mean      1.694700e+01 5.817440000 5.706743e+00 3.352045e-02
-    ## median    1.680000e+01 5.760000000 5.700000e+00 3.300000e-02
-    ## sd        4.199704e+00 0.716783703 1.236166e+00 1.298286e-02
-    ## var       1.763752e+01 0.513778877 1.528107e+00 1.685545e-04
-    ## shapiro_w 9.623978e-01 0.963100330 8.048607e-01 8.695358e-01
-    ## shapiro_p 8.956688e-10 0.001734828 3.880320e-37 8.368607e-32
 
 The p-values for the log-normal K-S test are all at 0, indicating that
 none of these distributions are log-normally distributed. So it turns
@@ -575,11 +553,6 @@ plots for a subset of analytes
 
 ``` r
 par(new = TRUE)
-```
-
-    ## Warning in par(new = TRUE): calling par(new=TRUE) with no plot
-
-``` r
 par(mfrow=c(3,4))
 
 names(kgw_chem_subset)
@@ -610,3 +583,120 @@ reinforces the fact that Shapiro identified almost no normal
 distributions, while K-S identified most analytes as normal
 
 ## Identifying Outliers: Rosner Test
+
+Moving on from tests for normality, I want to use the Rosner test to
+idenitfy potential outliers, and see generally tracks with the
+appearence of the nitrate boxplots
+
+``` r
+# Rosner test for Nitrate
+ros <- rosnerTest(unlist(kgw_chem[, 16]), k=15)
+
+ros$n.outliers
+```
+
+    ## [1] 15
+
+``` r
+ros$all.stats
+```
+
+    ##     i     Mean.i       SD.i Value Obs.Num     R.i+1 lambda.i+1 Outlier
+    ## 1   0 0.09545375 0.10775383 1.510    1960 13.127573   4.073372    TRUE
+    ## 2   1 0.09421834 0.09935006 1.080    7239  9.922305   4.073159    TRUE
+    ## 3   2 0.09335664 0.09501652 0.916      95  8.657898   4.072946    TRUE
+    ## 4   3 0.09263692 0.09188543 0.840    7238  8.133641   4.072733    TRUE
+    ## 5   4 0.09198249 0.08922093 0.830    7084  8.271798   4.072520    TRUE
+    ## 6   5 0.09133567 0.08653992 0.780    7319  7.957765   4.072307    TRUE
+    ## 7   6 0.09073158 0.08413671 0.710    7087  7.360264   4.072093    TRUE
+    ## 8   7 0.09018788 0.08214574 0.710    7527  7.545274   4.071879    TRUE
+    ## 9   8 0.08964323 0.08009796 0.700    7269  7.620129   4.071665    TRUE
+    ## 10  9 0.08910642 0.07805835 0.651     336  7.198379   4.071451    TRUE
+    ## 11 10 0.08861180 0.07628930 0.578     450  6.414899   4.071236    TRUE
+    ## 12 11 0.08818062 0.07492532 0.519    1140  5.749984   4.071022    TRUE
+    ## 13 12 0.08780071 0.07385660 0.499      77  5.567536   4.070807    TRUE
+    ## 14 13 0.08743778 0.07287054 0.484     396  5.442010   4.070592    TRUE
+    ## 15 14 0.08708746 0.07194193 0.469    3511  5.308622   4.070376    TRUE
+
+According to Rosner, there are 15 outliers, all occurring on the high
+end. This matches my intuition based on the boxplot generated earlier.
+
+## Examination of well levels, storage, and surface flow duration
+
+In my research I want to examine surface water - groundwater
+interactions at konza (which has an intermittent stream system). To do
+this, I want to find variables that correlate with flow duration at each
+location where we have placed a Stream Temperature, Intermittency, and
+Conductivty (STIC) logger. Below is a map of flow duration for each
+logger form the period June 2021 to September 2021. Before I can
+generate this map, I need to combine, tidy, and my classify my data
+which includes the use of a map function, as well as conditional
+branching
+
+Now I can make a map of the logger locations, colored by the flow
+duration for each logger (proportion of total 15-min observations that
+are classified as wet, out of the total number of observations)
+
+``` r
+Konza_STICData_highlight <- read_excel("Konza_STICData_highlight.xlsx", 
+                                       sheet = "Konza_AllSTICs")
+
+Konza_STICData_highlight <- Konza_STICData_highlight %>% 
+  rename(logger = STIC)
+
+
+Konza_STICData_highlight$logger <- as.numeric(Konza_STICData_highlight$logger)
+```
+
+    ## Warning: NAs introduced by coercion
+
+``` r
+konza_high_stic_coord <- left_join(Konza_STICData_highlight, stic_duration, by = "logger", na.rm = TRUE)
+
+
+konza_duration_map <- konza_high_stic_coord %>% 
+  dplyr::select(logger, duration, lat, long)
+
+
+konza_duration_map <- konza_duration_map %>% 
+  drop_na(logger, duration, lat, long)
+
+konza_map <- st_as_sf(konza_duration_map, coords = c("long", "lat"), crs = 4326)
+
+head(konza_map)
+```
+
+    ## Simple feature collection with 6 features and 2 fields
+    ## Geometry type: POINT
+    ## Dimension:     XY
+    ## Bounding box:  xmin: -96.58859 ymin: 39.08065 xmax: -96.57158 ymax: 39.09084
+    ## Geodetic CRS:  WGS 84
+    ## # A tibble: 6 x 3
+    ##     logger duration             geometry
+    ##      <dbl>    <dbl>          <POINT [°]>
+    ## 1 21044179    0.322 (-96.57633 39.08629)
+    ## 2 21064685    0.183 (-96.57594 39.08471)
+    ## 3 21044159    0.837 (-96.57419 39.08264)
+    ## 4 20946478    0.310 (-96.57158 39.08065)
+    ## 5 21044175    0.268 (-96.58833 39.09084)
+    ## 6 21064696    0.243 (-96.58859 39.08991)
+
+``` r
+# now generate final map
+ggplot() + 
+  geom_sf(data = konza_streams) + 
+  geom_sf(data = konza_map, aes(color = duration), size = 3) +
+  scale_color_viridis_c(direction = -1) +
+  theme_classic() +
+  ggtitle("Konza STIC Durations") + 
+  xlab("Longitude") + 
+  ylab("Latitude") + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  coord_sf(xlim = c(708000.9  , 710500.3 ), ylim = c(4327200.8  , 4330000.0 ), expand = FALSE) +
+  theme(axis.text=element_text(size=10), axis.title=element_text(size=15)) + 
+  theme(plot.title = element_text(size=18)) + 
+  xlab("Longitude") + 
+  ylab("Latitude")
+```
+
+![](R_course_github_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->

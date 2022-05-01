@@ -1,5 +1,5 @@
 ---
-title: "R Project: Konza Groundwater Analysis"
+title: "R Project: Konza groundwater analysis; analysis of storage and surface flow intermittency"
 output: github_document
 author: Christopher Wheeler
 ---
@@ -28,14 +28,32 @@ library(magrittr)
 library(tidyr)
 library(readxl)
 library(janitor)
+library(EnvStats)
+library(fs)
 ```
 ## Konza Praire LTER Overview
-Konza Prairie Biological Station (Konza) was designated as a Long-term Ecological Research Site (LTER) by NSF in 1981. In the 1990s, Dr. Gwen Macpherson coordinated the installation of multiple wells in the N04D watershed at Konza. All that historical groundwater data is accessible via the Konza Long-term Ecological Research Site webpage. Data include GWL measurements, as well as water quality data for many analytes This data I am going to analyze come from one of the many subwatersheds known as N04D. This watershed is grazed by bison for most of the year, and is subject to a controlled burn very four years.Below is a map of the entire site. 
+Konza Prairie Biological Station (Konza) was designated as a Long-term Ecological Research Site (LTER) by NSF in 1981. In the 1990s, Dr. Gwen Macpherson coordinated the installation of multiple wells in the N04D watershed at Konza. All that historical groundwater data is accessible via the Konza Long-term Ecological Research Site webpage. Data include GWL measurements, as well as water quality data for many analytes This data I am going to analyze come from one of the many subwatersheds known as N04D. This watershed is grazed by bison for most of the year, and is subject to a controlled burn very four years. We will begin by looking at groundwater chemisty, then move to an examination of how well levels and storage are related to intermittency in surface flow. The subsurface geology at konza consists of a series of thinly interbedded limestones and mudstones, with water movement largely within secondary porosity of the limestone layers. Below is a map of the entire site for context.
 ```{r}
+# Bring in `konza_boundary` shapefiles
+konza_boundary <- st_read(
+  "GIS002/GIS002.shp")
 
+#Bring in `konza_streams` shapefile
+konza_streams <- st_read(
+  "GIS210/GIS210.shp")
 
+ggplot() + 
+  geom_sf(data = konza_boundary) + 
+  geom_sf(data = konza_streams, color = "blue") + 
+  theme_cowplot() +
+  ggtitle("Konza Site Map") + 
+  xlab("Longitude") + 
+  ylab("Latitude") + 
+  theme(plot.title = element_text(hjust = 0.5))
 ```
+
 ## Data Tidying and First Look
+
 In this section, we will perform some basic data cleaning operations to get our data ready for further analysis
 ```{r}
 # bring in and examine konza groundwater data set
@@ -78,6 +96,7 @@ plot(kgw_chem_subset)
 ```
 From this cross plot, a few correlations stand out to me a potentially significant... 
 
+## Exploration of the chemistry of wells screened in different units.
 Additionally, as a first pass I want to look at differences among wells screened in different geologic units. First I need to do some subsetting.
 ```{r}
 kgw_2 <- kgw_2 %>% 
@@ -208,7 +227,6 @@ for(i in 1:ncol(stat_kgw)){
   stat_kgw[8, i] <- p_value
   
 }
-head(stat_kgw)
 ```
 Remarkably, results of the K-S test contrast quite strongly with Shapiro. According to K-S, all analytes show a normal distribution except Cl, pH, and Si.
 
@@ -233,13 +251,12 @@ for(i in 1:ncol(stat_kgw)){
   stat_kgw[10,i]<-p_value_log
   
 }
-head(stat_kgw)
 ```
 The p-values for the log-normal K-S test are all at 0, indicating that none of these distributions are log-normally distributed. So it turns out that Cl, pH, and Si have neither a normal distribution or a log-normal distribution. 
 
 ## QQ Plots
 Since we now know that most of the analytes in this data set are indeed normally distributed, we can back up that interpretation by creating QQ plots for a subset of analytes 
-```{r}
+```{r warning = FALSE}
 par(new = TRUE)
 par(mfrow=c(3,4))
 
@@ -262,6 +279,99 @@ qqnorm(kgw_chem_subset$k1, main = "k1")
 This result is interesting to me, because a lot of these don't appear as very straight lines, although most are somewhat straight. This to me reinforces the fact that Shapiro identified almost no normal distributions, while K-S identified most analytes as normal
 
 ## Identifying Outliers: Rosner Test
+Moving on from tests for normality, I want to use the Rosner test to idenitfy potential outliers, and see generally tracks with the appearence of the nitrate boxplots 
+
+```{r warning = FALSE}
+
+# Rosner test for Nitrate
+ros <- rosnerTest(unlist(kgw_chem[, 16]), k=15)
+
+ros$n.outliers
+
+ros$all.stats
+```
+According to Rosner, there are 15 outliers, all occurring on the high end. This matches my intuition based on the boxplot generated earlier. 
+
+## Examination of well levels, storage, and surface flow duration
+In my research I want to examine surface water - groundwater interactions at konza (which has an intermittent stream system). To do this, I want to find variables that correlate with flow duration at each location where we have placed a Stream Temperature, Intermittency, and Conductivty (STIC) logger. Below is a map of flow duration for each logger form the period June 2021 to September 2021. Before I can generate this map, I need to combine, tidy, and my classify my data which includes the use of a map function, as well as conditional branching 
+```{r, include = FALSE, warning = FALSE}
+data_dir <- "processed_stic_names"
+
+fs::dir_ls(data_dir)
+
+length(data_dir)
+
+stic_files <- fs::dir_ls(data_dir, regexp = "\\.csv$")
+
+stic_files <- stic_files %>% 
+  map_dfr(read_csv)
+
+stic_files <- stic_files %>% 
+  dplyr::mutate(wetdry = if_else(conductivity >= 1000, "wet", "dry" ))
+
+stic_files <- stic_files %>% 
+  mutate(date = lubridate::date(datetime))
+
+stic_files <- stic_files %>% 
+  dplyr::filter(datetime >= "2021-05-23")
+
+stic_files <- stic_files %>% 
+  mutate(day = lubridate::yday(date))
+
+### Calculate flow duration for each sensor
+stic_duration <- stic_files %>% 
+  group_by(logger) %>% 
+  summarise(n_wet = sum(wetdry == "wet", na.rm = TRUE), count = n()) %>% 
+  mutate(duration = n_wet/count)
+
+head(stic_duration)
+```
+
+Now I can make a map of the logger locations, colored by the flow duration for each logger (proportion of total 15-min observations that are classified as wet, out of the total number of observations)
+
+```{r}
+Konza_STICData_highlight <- read_excel("Konza_STICData_highlight.xlsx", 
+                                       sheet = "Konza_AllSTICs")
+
+Konza_STICData_highlight <- Konza_STICData_highlight %>% 
+  rename(logger = STIC)
+
+
+Konza_STICData_highlight$logger <- as.numeric(Konza_STICData_highlight$logger)
+
+
+konza_high_stic_coord <- left_join(Konza_STICData_highlight, stic_duration, by = "logger", na.rm = TRUE)
+
+
+konza_duration_map <- konza_high_stic_coord %>% 
+  dplyr::select(logger, duration, lat, long)
+
+
+konza_duration_map <- konza_duration_map %>% 
+  drop_na(logger, duration, lat, long)
+
+konza_map <- st_as_sf(konza_duration_map, coords = c("long", "lat"), crs = 4326)
+
+head(konza_map)
+
+# now generate final map
+ggplot() + 
+  geom_sf(data = konza_streams) + 
+  geom_sf(data = konza_map, aes(color = duration), size = 3) +
+  scale_color_viridis_c(direction = -1) +
+  theme_classic() +
+  ggtitle("Konza STIC Durations") + 
+  xlab("Longitude") + 
+  ylab("Latitude") + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  coord_sf(xlim = c(708000.9  , 710500.3 ), ylim = c(4327200.8  , 4330000.0 ), expand = FALSE) +
+  theme(axis.text=element_text(size=10), axis.title=element_text(size=15)) + 
+  theme(plot.title = element_text(size=18)) + 
+  xlab("Longitude") + 
+  ylab("Latitude")
+
+```
+
 
 
 
