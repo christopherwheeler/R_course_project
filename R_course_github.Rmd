@@ -54,9 +54,6 @@ kgw <- kgw %>%
   mutate(date = lubridate::ymd(WLDate)) %>% 
   clean_names() %>% 
   dplyr::select(-wl_date)
-  
-# now look at data and col types again
-summary(kgw)
 ```
 Now that the data frame is cleaned up, I can start an exploratory analysis. As we learned in class, a good first pass at this is to simply create a cross plot of all the variables to check for any obvious correlations. When I first tried using plot with the whole data frame, I got an error saying that the margins were too large. I next tried to use a subsetted data frame with just the chemistry
 ```{r message = FALSE, warning = FALSE}
@@ -75,7 +72,7 @@ names(kgw_chem)
 kgw_chem_subset <- kgw_chem %>% 
   dplyr::select(na1, na2, ca1, ca2, nh4_n, no3_n, alkalinity, temp, mg1, cl, so4, k1)
 ```
-cross plot
+## Cross Plot
 ```{r}
 plot(kgw_chem_subset)
 ```
@@ -89,7 +86,7 @@ kgw_2 <- kgw_2 %>%
 kgw_geosub <- kgw_2[kgw_2$geology == 'AL' | kgw_2$geology == 'AL' | kgw_2$geology == 'Eis'   
                  | kgw_2$geology == 'Eis 1' | kgw_2$geology == 'Eis 2'  | kgw_2$geology == '1Mor'| kgw_2$geology == 'Mor', ]
 ```
-Here is plot
+## Boxplot
 ```{r warning = FALSE}
 ggplot(kgw_geosub, aes(x = factor(geology), y = no3_n, fill = geology)) + 
   geom_boxplot() + 
@@ -98,7 +95,9 @@ ggplot(kgw_geosub, aes(x = factor(geology), y = no3_n, fill = geology)) +
   theme(legend.position="none") + 
   ylab(bquote(NO[3]^" -")) 
 ```
-Below is density plot
+
+## Denisty Plot
+
 ```{r}
 ggplot(kgw_geosub, aes(no3_n, fill = geology)) + 
   geom_density(alpha = 0.3) + 
@@ -107,12 +106,7 @@ ggplot(kgw_geosub, aes(no3_n, fill = geology)) +
   ylab("Density")
 
 ```
-Below is a QQ plot for all observations of So4
-```{r}
 
-
-
-```
 Now bring in second data set with high frequency GWl measurements on well subset
 ```{r warning = FALSE}
 agw <- read_csv("agw.csv") %>% 
@@ -154,7 +148,10 @@ stat_kgw <- as.data.frame(stat_kgw_mx)
 
 stat_kgw
 ```
-We can draw a few basic conclusions from the stats we have just generated. One is that for all analytes except ba, the median values are smaller than the mean values. This indicates a right skewed or positive skewed distribution. This is very common with environmental data, and water quality data in particular. Below I'll start explicitly evaulating the data distribution, starting with Shapiro-Wilkes
+We can draw a few basic conclusions from the stats we have just generated. One is that for all analytes except ba, the median values are smaller than the mean values. This indicates a right skewed or positive skewed distribution. This is very common with environmental data, and water quality data in particular. Below I'll start explicitly evaluating the data distribution, starting with Shapiro-Wilkes. But before that I want to generate historgrams to visually evaluate distributions
+
+## Histograms
+
 ```{r warning = FALSE}
 # Before Shapiro-Wikes, I want to generate histograms for all analytes
 par(mfrow=c(3,4))
@@ -167,8 +164,7 @@ for(i in 1:ncol(kgw_chem_subset)) {
 ```
 
 ## Shapiro-Wilkes
-
-Looking at the histograms above, it appears that temperature looks the most normal, while ammonia looks least normal. I will use Shapiro-Wilkes on both of these distributions to test this hypothesis. 
+Looking at the histograms above, it appears that temperature looks the most normal, while ammonia looks least normal. I will use Shapiro-Wilkes on both of these distributions to test this hypothesis. For this test, if the p value is greater than the chosen alpha level, then the data are normally distributed. 
 ```{r warning = FALSE}
 rm(stat_kgw_mx)
 
@@ -178,28 +174,94 @@ rownames(stat_kgw)[rownames(stat_kgw) == "5"] = "shapiro_w"
 rownames(stat_kgw)[rownames(stat_kgw) == "6"] = "shapiro_p"
 
 for(i in 1:ncol(stat_kgw)){
+  
   a <- unlist(kgw_chem[, i])
   st <- shapiro.test(a)
   w_stat <- st[1]
   p_val <- st[2]
   stat_kgw[5, i] <- w_stat
   stat_kgw[6, i] <- p_val
+  
 }
 
 head(stat_kgw)
 ```
+Contrary to my hypothesis, It appears that NONE of the anlaytes have a shapiro p value above 0.05, and thus none are normaly distributed according to this test
+
 ## Kolmogorov-Smirnov Test
+Now I want to check normality again using the K-S test. I am interested to see if the results of this test are different from Shapiro-Wilkes. For the K-S test, if the p value is greater than the chosen alpha level, then the data are normally distributed (the same as Shaprio-Wilkes).
+```{r warning = FALSE}
+stat_kgw[nrow(stat_kgw) + 2, ] <- NA
+rownames(stat_kgw)[rownames(stat_kgw) == "7"] = "ks_d"
+rownames(stat_kgw)[rownames(stat_kgw) == "8"] = "ks_p"
+
+# Loop to test all cols
+for(i in 1:ncol(stat_kgw)){
+  
+  stat_kgw_unl <- as.matrix(as.numeric(stat_kgw[, i])) 
+  mean_kgw<-colMeans(kgw_chem[i], na.rm=T)
+  sd_kgw <- sd(unlist(kgw_chem[i]), na.rm=T)
+ kgw_ks <- ks.test(stat_kgw_unl, "pnorm", mean=mean_kgw, sd=sd_kgw)
+  d_stat <- round(as.numeric(kgw_ks[1]), 4)
+  p_value <- round(as.numeric(kgw_ks[2]), 4)
+  stat_kgw[7, i] <- d_stat
+  stat_kgw[8, i] <- p_value
+  
+}
+head(stat_kgw)
+```
+Remarkably, results of the K-S test contrast quite strongly with Shapiro. According to K-S, all analytes show a normal distribution except Cl, pH, and Si.
+
+## Kolmogorov-Smirnov Test for Log-normal Distribution
+Because a lot of histograms and density curves appear to follow a log-normal distribution (as many hydrologic and environmental data sets do), I would like to perform the K-S test again, but testing for a log-normal distribution, to see if those analytes that didn't show a normal distribution end up showing a log-normal distribution. 
+```{r warning = FALSE}
+
+stat_kgw[nrow(stat_kgw) + 2, ] <- NA
+rownames(stat_kgw)[rownames(stat_kgw) == "9"] = "ks_d_log"
+rownames(stat_kgw)[rownames(stat_kgw) == "10"] = "ks_p_log"
+
+# Loop to test all cols
+for(i in 1:ncol(stat_kgw)){
+  
+  stat_kgw_unl <- as.matrix(as.numeric(stat_kgw[,i])) #as.matrix unlists the column
+  mean_kgw<-colMeans(kgw_chem[i],na.rm=T)
+  sd_kgw<-sd(unlist(kgw_chem[i]),na.rm=T)
+ kgw_ks<-ks.test(stat_kgw_unl,"plnorm",mean=mean_kgw,sd=sd_kgw)
+  d_stat_log<-round(as.numeric(kgw_ks[1]),4)
+  p_value_log<-round(as.numeric(kgw_ks[2]),4)
+  stat_kgw[9,i]<-d_stat_log
+  stat_kgw[10,i]<-p_value_log
+  
+}
+head(stat_kgw)
+```
+The p-values for the log-normal K-S test are all at 0, indicating that none of these distributions are log-normally distributed. So it turns out that Cl, pH, and Si have neither a normal distribution or a log-normal distribution. 
+
+## QQ Plots
+Since we now know that most of the analytes in this data set are indeed normally distributed, we can back up that interpretation by creating QQ plots for a subset of analytes 
 ```{r}
+par(new = TRUE)
+par(mfrow=c(3,4))
 
+names(kgw_chem_subset)
 
-
+qqnorm(kgw_chem_subset$na1, main = "na1")
+qqnorm(kgw_chem_subset$na2, main = "na2")
+qqnorm(kgw_chem_subset$ca1, main = "ca1")
+qqnorm(kgw_chem_subset$nh4_n, main = "nh4_n")
+qqnorm(kgw_chem_subset$no3_n, main = "no3_n")
+qqnorm(kgw_chem_subset$alkalinity, main = "alkalinity")
+qqnorm(kgw_chem_subset$temp, main = "temp")
+qqnorm(kgw_chem_subset$mg1, main = "mg1")
+qqnorm(kgw_chem_subset$cl, main = "cl")
+qqnorm(kgw_chem_subset$so4, main = "so4")
+qqnorm(kgw_chem_subset$k1, main = "k1")
 
 
 ```
+This result is interesting to me, because a lot of these don't appear as very straight lines, although most are somewhat straight. This to me reinforces the fact that Shapiro identified almost no normal distributions, while K-S identified most analytes as normal
 
-
-
-
+## Identifying Outliers: Rosner Test
 
 
 

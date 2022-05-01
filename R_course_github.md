@@ -172,83 +172,7 @@ kgw <- kgw %>%
   mutate(date = lubridate::ymd(WLDate)) %>% 
   clean_names() %>% 
   dplyr::select(-wl_date)
-  
-# now look at data and col types again
-summary(kgw)
 ```
-
-    ##    datacode            rectype    location             trans     
-    ##  Length:7631        Min.   :1   Length:7631        Min.   :1.00  
-    ##  Class :character   1st Qu.:1   Class :character   1st Qu.:2.00  
-    ##  Mode  :character   Median :1   Mode  :character   Median :3.00  
-    ##                     Mean   :1                      Mean   :2.89  
-    ##                     3rd Qu.:1                      3rd Qu.:4.00  
-    ##                     Max.   :1                      Max.   :4.00  
-    ##                                                    NA's   :10    
-    ##       plot         geology             recyear      elevation        
-    ##  Min.   :1.000   Length:7631        Min.   :1990   Length:7631       
-    ##  1st Qu.:2.000   Class :character   1st Qu.:2000   Class :character  
-    ##  Median :4.000   Mode  :character   Median :2008   Mode  :character  
-    ##  Mean   :4.018                      Mean   :2007                     
-    ##  3rd Qu.:6.000                      3rd Qu.:2014                     
-    ##  Max.   :7.000                      Max.   :2019                     
-    ##  NA's   :10                                                          
-    ##    sw_date               na1              na2               k1       
-    ##  Length:7631        Min.   : 2.060   Min.   : 2.360   Min.   :0.120  
-    ##  Class :character   1st Qu.: 4.170   1st Qu.: 4.350   1st Qu.:0.680  
-    ##  Mode  :character   Median : 4.840   Median : 5.080   Median :0.830  
-    ##                     Mean   : 6.252   Mean   : 5.797   Mean   :0.923  
-    ##                     3rd Qu.: 5.710   3rd Qu.: 6.428   3rd Qu.:1.070  
-    ##                     Max.   :28.600   Max.   :19.000   Max.   :6.160  
-    ##                     NA's   :7146     NA's   :6305     NA's   :7139   
-    ##        k2             li            nh4_n            ca1        
-    ##  Min.   :0.06   Min.   :0.002   Min.   :0.030   Min.   : 50.80  
-    ##  1st Qu.:0.70   1st Qu.:0.014   1st Qu.:0.060   1st Qu.: 80.40  
-    ##  Median :0.90   Median :0.021   Median :0.075   Median : 87.90  
-    ##  Mean   :0.90   Mean   :0.022   Mean   :0.084   Mean   : 85.75  
-    ##  3rd Qu.:1.08   3rd Qu.:0.029   3rd Qu.:0.110   3rd Qu.: 92.45  
-    ##  Max.   :5.03   Max.   :0.053   Max.   :0.170   Max.   :117.00  
-    ##  NA's   :6310   NA's   :6316    NA's   :7605    NA's   :7156    
-    ##       ca2              mg1             mg2              sr       
-    ##  Min.   : 42.80   Min.   : 8.56   Min.   : 7.90   Min.   :0.306  
-    ##  1st Qu.: 84.30   1st Qu.:16.10   1st Qu.:17.80   1st Qu.:0.800  
-    ##  Median : 90.80   Median :17.80   Median :20.00   Median :0.930  
-    ##  Mean   : 89.85   Mean   :19.78   Mean   :21.17   Mean   :1.056  
-    ##  3rd Qu.: 97.20   3rd Qu.:20.00   3rd Qu.:26.10   3rd Qu.:1.380  
-    ##  Max.   :164.00   Max.   :43.10   Max.   :50.20   Max.   :7.390  
-    ##  NA's   :6311     NA's   :7147    NA's   :6310    NA's   :6310   
-    ##        ba             so4               f              cl       
-    ##  Min.   :0.018   Min.   :  2.60   Min.   :0.00   Min.   :0.200  
-    ##  1st Qu.:0.067   1st Qu.: 18.55   1st Qu.:0.37   1st Qu.:1.500  
-    ##  Median :0.093   Median : 28.80   Median :0.43   Median :1.900  
-    ##  Mean   :0.089   Mean   : 30.78   Mean   :0.46   Mean   :1.968  
-    ##  3rd Qu.:0.105   3rd Qu.: 38.50   3rd Qu.:0.54   3rd Qu.:2.400  
-    ##  Max.   :0.890   Max.   :338.00   Max.   :1.58   Max.   :8.300  
-    ##  NA's   :6316    NA's   :5864     NA's   :6135   NA's   :5896   
-    ##      no3_n           hpo4_p       alkalinity         p_h1            ddb       
-    ##  Min.   :0.000   Min.   : NA    Min.   :193.0   Min.   :6.830   Min.   :7.340  
-    ##  1st Qu.:0.028   1st Qu.: NA    1st Qu.:340.0   1st Qu.:7.580   1st Qu.:7.425  
-    ##  Median :0.075   Median : NA    Median :354.0   Median :7.740   Median :7.770  
-    ##  Mean   :0.095   Mean   :NaN    Mean   :355.2   Mean   :7.752   Mean   :7.683  
-    ##  3rd Qu.:0.130   3rd Qu.: NA    3rd Qu.:371.0   3rd Qu.:7.940   3rd Qu.:7.845  
-    ##  Max.   :1.510   Max.   : NA    Max.   :459.0   Max.   :8.390   Max.   :8.170  
-    ##  NA's   :6485    NA's   :7631   NA's   :5887    NA's   :5890    NA's   :7580   
-    ##       p_h2            temp            si1             si2        
-    ##  Min.   :4.530   Min.   : 7.40   Min.   :4.260   Min.   : 0.010  
-    ##  1st Qu.:7.060   1st Qu.:14.30   1st Qu.:5.210   1st Qu.: 4.960  
-    ##  Median :7.220   Median :16.80   Median :5.760   Median : 5.700  
-    ##  Mean   :7.255   Mean   :16.95   Mean   :5.817   Mean   : 5.707  
-    ##  3rd Qu.:7.400   3rd Qu.:19.10   3rd Qu.:6.420   3rd Qu.: 6.330  
-    ##  Max.   :8.340   Max.   :34.80   Max.   :7.160   Max.   :22.100  
-    ##  NA's   :7133    NA's   :7148    NA's   :7506    NA's   :6314    
-    ##        b            conduct            date           
-    ##  Min.   :0.006   Min.   :  5.29   Min.   :1990-05-01  
-    ##  1st Qu.:0.024   1st Qu.:422.75   1st Qu.:1996-07-23  
-    ##  Median :0.033   Median :503.00   Median :2000-05-22  
-    ##  Mean   :0.034   Mean   :491.42   Mean   :2000-04-07  
-    ##  3rd Qu.:0.039   3rd Qu.:565.00   3rd Qu.:2004-02-28  
-    ##  Max.   :0.181   Max.   :728.00   Max.   :2007-11-18  
-    ##  NA's   :6311    NA's   :6955     NA's   :4140
 
 Now that the data frame is cleaned up, I can start an exploratory
 analysis. As we learned in class, a good first pass at this is to simply
@@ -282,7 +206,7 @@ kgw_chem_subset <- kgw_chem %>%
   dplyr::select(na1, na2, ca1, ca2, nh4_n, no3_n, alkalinity, temp, mg1, cl, so4, k1)
 ```
 
-cross plot
+## Cross Plot
 
 ``` r
 plot(kgw_chem_subset)
@@ -304,7 +228,7 @@ kgw_geosub <- kgw_2[kgw_2$geology == 'AL' | kgw_2$geology == 'AL' | kgw_2$geolog
                  | kgw_2$geology == 'Eis 1' | kgw_2$geology == 'Eis 2'  | kgw_2$geology == '1Mor'| kgw_2$geology == 'Mor', ]
 ```
 
-Here is plot
+## Boxplot
 
 ``` r
 ggplot(kgw_geosub, aes(x = factor(geology), y = no3_n, fill = geology)) + 
@@ -316,7 +240,8 @@ ggplot(kgw_geosub, aes(x = factor(geology), y = no3_n, fill = geology)) +
 ```
 
 ![](R_course_github_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
-Below is density plot
+
+## Denisty Plot
 
 ``` r
 ggplot(kgw_geosub, aes(no3_n, fill = geology)) + 
@@ -329,7 +254,6 @@ ggplot(kgw_geosub, aes(no3_n, fill = geology)) +
     ## Warning: Removed 5218 rows containing non-finite values (stat_density).
 
 ![](R_course_github_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
-Below is a QQ plot for all observations of So4
 
 Now bring in second data set with high frequency GWl measurements on
 well subset
@@ -416,8 +340,11 @@ We can draw a few basic conclusions from the stats we have just
 generated. One is that for all analytes except ba, the median values are
 smaller than the mean values. This indicates a right skewed or positive
 skewed distribution. This is very common with environmental data, and
-water quality data in particular. Below I’ll start explicitly evaulating
-the data distribution, starting with Shapiro-Wilkes
+water quality data in particular. Below I’ll start explicitly evaluating
+the data distribution, starting with Shapiro-Wilkes. But before that I
+want to generate historgrams to visually evaluate distributions
+
+## Histograms
 
 ``` r
 # Before Shapiro-Wikes, I want to generate histograms for all analytes
@@ -430,13 +357,15 @@ for(i in 1:ncol(kgw_chem_subset)) {
 }
 ```
 
-![](R_course_github_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](R_course_github_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ## Shapiro-Wilkes
 
 Looking at the histograms above, it appears that temperature looks the
 most normal, while ammonia looks least normal. I will use Shapiro-Wilkes
-on both of these distributions to test this hypothesis.
+on both of these distributions to test this hypothesis. For this test,
+if the p value is greater than the chosen alpha level, then the data are
+normally distributed.
 
 ``` r
 rm(stat_kgw_mx)
@@ -447,12 +376,14 @@ rownames(stat_kgw)[rownames(stat_kgw) == "5"] = "shapiro_w"
 rownames(stat_kgw)[rownames(stat_kgw) == "6"] = "shapiro_p"
 
 for(i in 1:ncol(stat_kgw)){
+  
   a <- unlist(kgw_chem[, i])
   st <- shapiro.test(a)
   w_stat <- st[1]
   p_val <- st[2]
   stat_kgw[5, i] <- w_stat
   stat_kgw[6, i] <- p_val
+  
 }
 
 head(stat_kgw)
@@ -494,4 +425,188 @@ head(stat_kgw)
     ## shapiro_w 9.623978e-01 0.963100330 8.048607e-01 8.695358e-01
     ## shapiro_p 8.956688e-10 0.001734828 3.880320e-37 8.368607e-32
 
+Contrary to my hypothesis, It appears that NONE of the anlaytes have a
+shapiro p value above 0.05, and thus none are normaly distributed
+according to this test
+
 ## Kolmogorov-Smirnov Test
+
+Now I want to check normality again using the K-S test. I am interested
+to see if the results of this test are different from Shapiro-Wilkes.
+For the K-S test, if the p value is greater than the chosen alpha level,
+then the data are normally distributed (the same as Shaprio-Wilkes).
+
+``` r
+stat_kgw[nrow(stat_kgw) + 2, ] <- NA
+rownames(stat_kgw)[rownames(stat_kgw) == "7"] = "ks_d"
+rownames(stat_kgw)[rownames(stat_kgw) == "8"] = "ks_p"
+
+# Loop to test all cols
+for(i in 1:ncol(stat_kgw)){
+  
+  stat_kgw_unl <- as.matrix(as.numeric(stat_kgw[, i])) 
+  mean_kgw<-colMeans(kgw_chem[i], na.rm=T)
+  sd_kgw <- sd(unlist(kgw_chem[i]), na.rm=T)
+ kgw_ks <- ks.test(stat_kgw_unl, "pnorm", mean=mean_kgw, sd=sd_kgw)
+  d_stat <- round(as.numeric(kgw_ks[1]), 4)
+  p_value <- round(as.numeric(kgw_ks[2]), 4)
+  stat_kgw[7, i] <- d_stat
+  stat_kgw[8, i] <- p_value
+  
+}
+head(stat_kgw)
+```
+
+    ##                    na1          na2           k1           k2           li
+    ## mean      6.251794e+00 5.796538e+00 9.232520e-01 8.998024e-01 2.221749e-02
+    ## median    4.840000e+00 5.080000e+00 8.300000e-01 9.000000e-01 2.100000e-02
+    ## sd        3.879375e+00 2.384605e+00 5.073806e-01 2.919556e-01 9.935170e-03
+    ## var       1.504955e+01 5.686340e+00 2.574350e-01 8.523806e-02 9.870761e-05
+    ## shapiro_w 6.741088e-01 8.057205e-01 5.842251e-01 8.737659e-01 9.669737e-01
+    ## shapiro_p 1.827056e-29 3.509644e-37 1.316876e-32 2.149063e-31 9.604846e-17
+    ##                 nh4_n          ca1          ca2          mg1          mg2
+    ## mean      0.084230769 8.575389e+01 8.984977e+01 1.977890e+01 2.117420e+01
+    ## median    0.075000000 8.790000e+01 9.080000e+01 1.780000e+01 2.000000e+01
+    ## sd        0.036019226 1.047690e+01 1.193762e+01 6.947848e+00 4.834154e+00
+    ## var       0.001297385 1.097654e+02 1.425067e+02 4.827259e+01 2.336905e+01
+    ## shapiro_w 0.952313534 9.625061e-01 9.424220e-01 8.295731e-01 9.422584e-01
+    ## shapiro_p 0.262542587 1.199668e-09 3.026100e-22 2.501892e-22 2.769038e-22
+    ##                     sr           ba          so4            f           cl
+    ## mean      1.056342e+00 8.877719e-02 3.077779e+01 4.595488e-01 1.968225e+00
+    ## median    9.300000e-01 9.300000e-02 2.880000e+01 4.300000e-01 1.900000e+00
+    ## sd        4.542451e-01 3.249599e-02 2.011607e+01 1.489686e-01 7.378180e-01
+    ## var       2.063386e-01 1.055989e-03 4.046561e+02 2.219166e-02 5.443754e-01
+    ## shapiro_w 7.363471e-01 6.153736e-01 6.315627e-01 9.166624e-01 9.300962e-01
+    ## shapiro_p 1.746291e-41 3.801785e-47 6.999153e-52 6.227605e-28 9.837045e-28
+    ##                  no3_n   alkalinity         p_h1         ddb         p_h2
+    ## mean      9.545375e-02 3.551662e+02 7.751838e+00 7.683137255 7.255221e+00
+    ## median    7.500000e-02 3.540000e+02 7.740000e+00 7.770000000 7.220000e+00
+    ## sd        1.077538e-01 2.633520e+01 2.460419e-01 0.225915827 3.756583e-01
+    ## var       1.161089e-02 6.935430e+02 6.053662e-02 0.051037961 1.411192e-01
+    ## shapiro_w 6.321183e-01 9.732590e-01 9.932095e-01 0.922908539 9.340771e-01
+    ## shapiro_p 4.664027e-44 1.680673e-17 3.525648e-07 0.002689781 5.053191e-14
+    ##                   temp         si1          si2            b
+    ## mean      1.694700e+01 5.817440000 5.706743e+00 3.352045e-02
+    ## median    1.680000e+01 5.760000000 5.700000e+00 3.300000e-02
+    ## sd        4.199704e+00 0.716783703 1.236166e+00 1.298286e-02
+    ## var       1.763752e+01 0.513778877 1.528107e+00 1.685545e-04
+    ## shapiro_w 9.623978e-01 0.963100330 8.048607e-01 8.695358e-01
+    ## shapiro_p 8.956688e-10 0.001734828 3.880320e-37 8.368607e-32
+
+Remarkably, results of the K-S test contrast quite strongly with
+Shapiro. According to K-S, all analytes show a normal distribution
+except Cl, pH, and Si.
+
+## Kolmogorov-Smirnov Test for Log-normal Distribution
+
+Because a lot of histograms and density curves appear to follow a
+log-normal distribution (as many hydrologic and environmental data sets
+do), I would like to perform the K-S test again, but testing for a
+log-normal distribution, to see if those analytes that didn’t show a
+normal distribution end up showing a log-normal distribution.
+
+``` r
+stat_kgw[nrow(stat_kgw) + 2, ] <- NA
+rownames(stat_kgw)[rownames(stat_kgw) == "9"] = "ks_d_log"
+rownames(stat_kgw)[rownames(stat_kgw) == "10"] = "ks_p_log"
+
+# Loop to test all cols
+for(i in 1:ncol(stat_kgw)){
+  
+  stat_kgw_unl <- as.matrix(as.numeric(stat_kgw[,i])) #as.matrix unlists the column
+  mean_kgw<-colMeans(kgw_chem[i],na.rm=T)
+  sd_kgw<-sd(unlist(kgw_chem[i]),na.rm=T)
+ kgw_ks<-ks.test(stat_kgw_unl,"plnorm",mean=mean_kgw,sd=sd_kgw)
+  d_stat_log<-round(as.numeric(kgw_ks[1]),4)
+  p_value_log<-round(as.numeric(kgw_ks[2]),4)
+  stat_kgw[9,i]<-d_stat_log
+  stat_kgw[10,i]<-p_value_log
+  
+}
+head(stat_kgw)
+```
+
+    ##                    na1          na2           k1           k2           li
+    ## mean      6.251794e+00 5.796538e+00 9.232520e-01 8.998024e-01 2.221749e-02
+    ## median    4.840000e+00 5.080000e+00 8.300000e-01 9.000000e-01 2.100000e-02
+    ## sd        3.879375e+00 2.384605e+00 5.073806e-01 2.919556e-01 9.935170e-03
+    ## var       1.504955e+01 5.686340e+00 2.574350e-01 8.523806e-02 9.870761e-05
+    ## shapiro_w 6.741088e-01 8.057205e-01 5.842251e-01 8.737659e-01 9.669737e-01
+    ## shapiro_p 1.827056e-29 3.509644e-37 1.316876e-32 2.149063e-31 9.604846e-17
+    ##                 nh4_n          ca1          ca2          mg1          mg2
+    ## mean      0.084230769 8.575389e+01 8.984977e+01 1.977890e+01 2.117420e+01
+    ## median    0.075000000 8.790000e+01 9.080000e+01 1.780000e+01 2.000000e+01
+    ## sd        0.036019226 1.047690e+01 1.193762e+01 6.947848e+00 4.834154e+00
+    ## var       0.001297385 1.097654e+02 1.425067e+02 4.827259e+01 2.336905e+01
+    ## shapiro_w 0.952313534 9.625061e-01 9.424220e-01 8.295731e-01 9.422584e-01
+    ## shapiro_p 0.262542587 1.199668e-09 3.026100e-22 2.501892e-22 2.769038e-22
+    ##                     sr           ba          so4            f           cl
+    ## mean      1.056342e+00 8.877719e-02 3.077779e+01 4.595488e-01 1.968225e+00
+    ## median    9.300000e-01 9.300000e-02 2.880000e+01 4.300000e-01 1.900000e+00
+    ## sd        4.542451e-01 3.249599e-02 2.011607e+01 1.489686e-01 7.378180e-01
+    ## var       2.063386e-01 1.055989e-03 4.046561e+02 2.219166e-02 5.443754e-01
+    ## shapiro_w 7.363471e-01 6.153736e-01 6.315627e-01 9.166624e-01 9.300962e-01
+    ## shapiro_p 1.746291e-41 3.801785e-47 6.999153e-52 6.227605e-28 9.837045e-28
+    ##                  no3_n   alkalinity         p_h1         ddb         p_h2
+    ## mean      9.545375e-02 3.551662e+02 7.751838e+00 7.683137255 7.255221e+00
+    ## median    7.500000e-02 3.540000e+02 7.740000e+00 7.770000000 7.220000e+00
+    ## sd        1.077538e-01 2.633520e+01 2.460419e-01 0.225915827 3.756583e-01
+    ## var       1.161089e-02 6.935430e+02 6.053662e-02 0.051037961 1.411192e-01
+    ## shapiro_w 6.321183e-01 9.732590e-01 9.932095e-01 0.922908539 9.340771e-01
+    ## shapiro_p 4.664027e-44 1.680673e-17 3.525648e-07 0.002689781 5.053191e-14
+    ##                   temp         si1          si2            b
+    ## mean      1.694700e+01 5.817440000 5.706743e+00 3.352045e-02
+    ## median    1.680000e+01 5.760000000 5.700000e+00 3.300000e-02
+    ## sd        4.199704e+00 0.716783703 1.236166e+00 1.298286e-02
+    ## var       1.763752e+01 0.513778877 1.528107e+00 1.685545e-04
+    ## shapiro_w 9.623978e-01 0.963100330 8.048607e-01 8.695358e-01
+    ## shapiro_p 8.956688e-10 0.001734828 3.880320e-37 8.368607e-32
+
+The p-values for the log-normal K-S test are all at 0, indicating that
+none of these distributions are log-normally distributed. So it turns
+out that Cl, pH, and Si have neither a normal distribution or a
+log-normal distribution.
+
+## QQ Plots
+
+Since we now know that most of the analytes in this data set are indeed
+normally distributed, we can back up that interpretation by creating QQ
+plots for a subset of analytes
+
+``` r
+par(new = TRUE)
+```
+
+    ## Warning in par(new = TRUE): calling par(new=TRUE) with no plot
+
+``` r
+par(mfrow=c(3,4))
+
+names(kgw_chem_subset)
+```
+
+    ##  [1] "na1"        "na2"        "ca1"        "ca2"        "nh4_n"     
+    ##  [6] "no3_n"      "alkalinity" "temp"       "mg1"        "cl"        
+    ## [11] "so4"        "k1"
+
+``` r
+qqnorm(kgw_chem_subset$na1, main = "na1")
+qqnorm(kgw_chem_subset$na2, main = "na2")
+qqnorm(kgw_chem_subset$ca1, main = "ca1")
+qqnorm(kgw_chem_subset$nh4_n, main = "nh4_n")
+qqnorm(kgw_chem_subset$no3_n, main = "no3_n")
+qqnorm(kgw_chem_subset$alkalinity, main = "alkalinity")
+qqnorm(kgw_chem_subset$temp, main = "temp")
+qqnorm(kgw_chem_subset$mg1, main = "mg1")
+qqnorm(kgw_chem_subset$cl, main = "cl")
+qqnorm(kgw_chem_subset$so4, main = "so4")
+qqnorm(kgw_chem_subset$k1, main = "k1")
+```
+
+![](R_course_github_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+This result is interesting to me, because a lot of these don’t appear as
+very straight lines, although most are somewhat straight. This to me
+reinforces the fact that Shapiro identified almost no normal
+distributions, while K-S identified most analytes as normal
+
+## Identifying Outliers: Rosner Test
