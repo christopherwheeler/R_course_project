@@ -279,7 +279,7 @@ names(kgw_chem)
 
 ``` r
 kgw_chem_subset <- kgw_chem %>% 
-  dplyr::select(na1, na2, ca1, ca2, nh4_n, no3_n, alkalinity, temp, mg1, cl)
+  dplyr::select(na1, na2, ca1, ca2, nh4_n, no3_n, alkalinity, temp, mg1, cl, so4, k1)
 ```
 
 cross plot
@@ -416,4 +416,18 @@ We can draw a few basic conclusions from the stats we have just
 generated. One is that for all analytes except ba, the median values are
 smaller than the mean values. This indicates a right skewed or positive
 skewed distribution. This is very common with environmental data, and
-water quality data in particular.
+water quality data in particular. Below I’ll start explicitly evaulating
+the data distribution, starting with Shapiro-Wilkes
+
+``` r
+# Before Shapiro-Wikes, I want to generate histograms for all analytes
+par(mfrow=c(3,4))
+
+for(i in 1:ncol(kgw_chem_subset)) {
+
+  hist(unlist(kgw_chem_subset[,i]), na.rm = TRUE, main = "", xlab=colnames(kgw_chem_subset[i]))
+
+}
+```
+
+![](R_course_github_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
