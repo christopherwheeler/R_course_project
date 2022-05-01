@@ -45,7 +45,7 @@ as N04D. This watershed is grazed by bison for most of the year, and is
 subject to a controlled burn very four years.Below is a map of the
 entire site.
 
-## Tidy, gap-fill, QAQC data
+## Data Tidying and First Look
 
 In this section, we will perform some basic data cleaning operations to
 get our data ready for further analysis
@@ -431,10 +431,12 @@ for(i in 1:ncol(kgw_chem_subset)) {
 ```
 
 ![](R_course_github_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
-\#\# Shapiro-Wilkes Looking at the histograms above, it appears that
-temperature looks the most normal, while ammonia looks least normal. I
-will use Shapiro-Wilkes on both of these distributions to test this
-hypothesis.
+
+## Shapiro-Wilkes
+
+Looking at the histograms above, it appears that temperature looks the
+most normal, while ammonia looks least normal. I will use Shapiro-Wilkes
+on both of these distributions to test this hypothesis.
 
 ``` r
 rm(stat_kgw_mx)
