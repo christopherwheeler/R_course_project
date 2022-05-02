@@ -924,7 +924,8 @@ outcropping at each site)
 Finally, I want to shed some light on how soil storage relates to
 surface flow in this system. For this I will use additional existing
 Konza data (storage in the upper 50 cm of soil). However, these stations
-only began collecting data in July of 2021.
+only began collecting data in July of 2021. Below is a map that gives a
+sense of what this data looks like.
 
 ### Map of Average Soil Water Storage at Konza
 
@@ -1187,3 +1188,71 @@ ggplot() +
 ![](R_course_github_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
 
 ## Relationship between soil storage and wet network proportion
+
+To look at this relationship I will use soil storage from konza pulse
+station 2 in conjunction with a metric from my STIC data called wet
+network proportion. This is the percentage of the total number of
+sensors showing a wet reading at each timestep, which I will calulate
+from my `stic_files` data frame above.
+
+``` r
+# calulate wet network proportion from existing stic_files
+stic_wet_prop <- stic_files %>% 
+  group_by(datetime) %>% 
+  summarise(n_wet = sum(wetdry == "wet"), n_sensors = n() ) %>% 
+  mutate(percent = n_wet/n_sensors)
+
+# join Konza pulse station two and wet network proportion data
+storage_wet_network <- left_join(stic_wet_prop, station_2, by = "datetime") %>% 
+  clean_names()
+
+# graph relationship 
+ggplot(storage_wet_network, aes(x = storage_50_cm, y = percent)) + 
+         geom_point() + 
+         theme_cowplot() + 
+         xlab("Storage 50cm") + 
+         ylab("Wet network proportion")
+```
+
+    ## Warning: Removed 10470 rows containing missing values (geom_point).
+
+![](R_course_github_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+
+``` r
+plot(storage_wet_network$storage_50_cm, storage_wet_network$percent, xlab = "Storage 50cm", ylab = "Wet network proportion")
+```
+
+![](R_course_github_files/figure-gfm/unnamed-chunk-24-2.png)<!-- -->
+
+This looks like a significant relationship. In particular, the slope of
+the relationship increases around the storage value of 175.
+
+As a final exercise, lets look at the significance of this relationship
+
+``` r
+storage_model <- lm(percent ~ storage_50_cm, data = storage_wet_network)
+
+summary(storage_model)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = percent ~ storage_50_cm, data = storage_wet_network)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.22173 -0.03292 -0.00122  0.02977  0.47768 
+    ## 
+    ## Coefficients:
+    ##                Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)   0.0191177  0.0074828   2.555   0.0107 *  
+    ## storage_50_cm 0.0031553  0.0000544  58.001   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.06469 on 2194 degrees of freedom
+    ##   (10470 observations deleted due to missingness)
+    ## Multiple R-squared:  0.6053, Adjusted R-squared:  0.6051 
+    ## F-statistic:  3364 on 1 and 2194 DF,  p-value: < 2.2e-16
+
+## Thanks! Any Questions or Comments?
