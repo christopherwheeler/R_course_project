@@ -33,6 +33,9 @@ library(fs)
 ```
 ## Konza Praire LTER Overview
 Konza Prairie Biological Station (Konza) was designated as a Long-term Ecological Research Site (LTER) by NSF in 1981. In the 1990s, Dr. Gwen Macpherson coordinated the installation of multiple wells in the N04D watershed at Konza. All that historical groundwater data is accessible via the Konza Long-term Ecological Research Site webpage. Data include GWL measurements, as well as water quality data for many analytes This data I am going to analyze come from one of the many subwatersheds known as N04D. This watershed is grazed by bison for most of the year, and is subject to a controlled burn very four years. We will begin by looking at groundwater chemisty, then move to an examination of how well levels and storage are related to intermittency in surface flow. The subsurface geology at konza consists of a series of thinly interbedded limestones and mudstones, with water movement largely within secondary porosity of the limestone layers. Below is a map of the entire site for context.
+
+## Site map: a. operations involving expanding, reorganizing, reshaping a data frame
+
 ```{r}
 # Bring in `konza_boundary` shapefiles
 konza_boundary <- st_read(
@@ -52,7 +55,7 @@ ggplot() +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-## Data Tidying and First Look
+## Data Tidying and First Look: a. operations involving expanding, reorganizing, reshaping a dataframe
 
 In this section, we will perform some basic data cleaning operations to get our data ready for further analysis
 ```{r}
@@ -75,6 +78,7 @@ kgw <- kgw %>%
 ```
 Now that the data frame is cleaned up, I can start an exploratory analysis. As we learned in class, a good first pass at this is to simply create a cross plot of all the variables to check for any obvious correlations. When I first tried using plot with the whole data frame, I got an error saying that the margins were too large. I next tried to use a subsetted data frame with just the chemistry
 ```{r message = FALSE, warning = FALSE}
+
 # subset original df to one with just chemical concentrations
 
 all_na <- function(x) any(!is.na(x))
@@ -90,13 +94,15 @@ names(kgw_chem)
 kgw_chem_subset <- kgw_chem %>% 
   dplyr::select(na1, na2, ca1, ca2, nh4_n, no3_n, alkalinity, temp, mg1, cl, so4, k1)
 ```
-## Cross Plot
+## Cross Plot: d v. xy plot
 ```{r}
 plot(kgw_chem_subset)
 ```
-From this cross plot, a few correlations stand out to me a potentially significant... 
 
-## Exploration of the chemistry of wells screened in different units.
+From this cross plot, a few correlations stand out to me a potentially significant, including the correlations between mg and ca. We will revisit this relationships later.
+
+## Exploration of the chemistry of wells screened in different units: a. operations involving expanding, reorganizing, reshaping a data frame
+
 Additionally, as a first pass I want to look at differences among wells screened in different geologic units. First I need to do some subsetting.
 ```{r}
 kgw_2 <- kgw_2 %>% 
@@ -105,7 +111,7 @@ kgw_2 <- kgw_2 %>%
 kgw_geosub <- kgw_2[kgw_2$geology == 'AL' | kgw_2$geology == 'AL' | kgw_2$geology == 'Eis'   
                  | kgw_2$geology == 'Eis 1' | kgw_2$geology == 'Eis 2'  | kgw_2$geology == '1Mor'| kgw_2$geology == 'Mor', ]
 ```
-## Boxplot
+## Boxplot: d iv. boxplot
 ```{r warning = FALSE}
 ggplot(kgw_geosub, aes(x = factor(geology), y = no3_n, fill = geology)) + 
   geom_boxplot() + 
@@ -115,7 +121,7 @@ ggplot(kgw_geosub, aes(x = factor(geology), y = no3_n, fill = geology)) +
   ylab(bquote(NO[3]^" -")) 
 ```
 
-## Denisty Plot
+## Denisty Plot: d ii. density plot
 
 ```{r}
 ggplot(kgw_geosub, aes(no3_n, fill = geology)) + 
@@ -126,22 +132,8 @@ ggplot(kgw_geosub, aes(no3_n, fill = geology)) +
 
 ```
 
-Now bring in second data set with high frequency GWl measurements on well subset
-```{r warning = FALSE}
-agw <- read_csv("agw.csv") %>% 
-  rename(datetime = WLDate) %>% 
-  mutate(datetime = lubridate::mdy_hms(datetime)) %>% 
-  clean_names()
+## Evaluation of Statistical Tests: a. operations involving expanding, reorganizing, reshaping a data frame
 
-```
-At the end I want three animated maps: gw levels, pulse storage, and stics
-```{r}
-#animated maps 
-
-
-
-```
-## Evaluation of Statistical Tests
 Below is making a stats dataframe form the `kgw_chem` numeric data frame
 ```{r warning = FALSE}
 # start data frame with column of means
@@ -167,9 +159,9 @@ stat_kgw <- as.data.frame(stat_kgw_mx)
 
 stat_kgw
 ```
-We can draw a few basic conclusions from the stats we have just generated. One is that for all analytes except ba, the median values are smaller than the mean values. This indicates a right skewed or positive skewed distribution. This is very common with environmental data, and water quality data in particular. Below I'll start explicitly evaluating the data distribution, starting with Shapiro-Wilkes. But before that I want to generate historgrams to visually evaluate distributions
+We can draw a few basic conclusions from the stats we have just generated. One is that for all analytes except ba, the median values are smaller than the mean values. This indicates a right skewed or positive skewed distribution. This is very common with environmental data, and water quality data in particular. Below I'll start explicitly evaluating the data distribution, starting with Shapiro-Wilkes. But before that I want to generate histograms to visually evaluate distributions.
 
-## Histograms
+## Histograms: d vi. barchart
 
 ```{r warning = FALSE}
 # Before Shapiro-Wikes, I want to generate histograms for all analytes
@@ -182,7 +174,8 @@ for(i in 1:ncol(kgw_chem_subset)) {
 }
 ```
 
-## Shapiro-Wilkes
+## Shapiro-Wilkes: c ii
+
 Looking at the histograms above, it appears that temperature looks the most normal, while ammonia looks least normal. I will use Shapiro-Wilkes on both of these distributions to test this hypothesis. For this test, if the p value is greater than the chosen alpha level, then the data are normally distributed. 
 ```{r warning = FALSE}
 rm(stat_kgw_mx)
@@ -205,9 +198,10 @@ for(i in 1:ncol(stat_kgw)){
 
 head(stat_kgw)
 ```
-Contrary to my hypothesis, It appears that NONE of the anlaytes have a shapiro p value above 0.05, and thus none are normaly distributed according to this test
+Contrary to my hypothesis, It appears that NONE of the analytes have a Shapiro p value above 0.05, and thus none are normaly distributed according to this test
 
-## Kolmogorov-Smirnov Test
+## Kolmogorov-Smirnov Test: c v.
+
 Now I want to check normality again using the K-S test. I am interested to see if the results of this test are different from Shapiro-Wilkes. For the K-S test, if the p value is greater than the chosen alpha level, then the data are normally distributed (the same as Shaprio-Wilkes).
 ```{r warning = FALSE}
 stat_kgw[nrow(stat_kgw) + 2, ] <- NA
@@ -228,10 +222,13 @@ for(i in 1:ncol(stat_kgw)){
   
 }
 ```
+
 Remarkably, results of the K-S test contrast quite strongly with Shapiro. According to K-S, all analytes show a normal distribution except Cl, pH, and Si.
 
-## Kolmogorov-Smirnov Test for Log-normal Distribution
-Because a lot of histograms and density curves appear to follow a log-normal distribution (as many hydrologic and environmental data sets do), I would like to perform the K-S test again, but testing for a log-normal distribution, to see if those analytes that didn't show a normal distribution end up showing a log-normal distribution. 
+## Kolmogorov-Smirnov Test for Log-normal Distribution: c v.
+Because a lot of histograms and density curves appear to follow a log-normal distribution (as many hydrologic and environmental data sets do), I would like to perform the K-S test again, but testing for a log-normal distribution, to see if those analytes 
+that didn't show a normal distribution end up showing a log-normal distribution. 
+
 ```{r warning = FALSE}
 
 stat_kgw[nrow(stat_kgw) + 2, ] <- NA
@@ -247,15 +244,19 @@ for(i in 1:ncol(stat_kgw)){
  kgw_ks<-ks.test(stat_kgw_unl,"plnorm",mean=mean_kgw,sd=sd_kgw)
   d_stat_log<-round(as.numeric(kgw_ks[1]),4)
   p_value_log<-round(as.numeric(kgw_ks[2]),4)
-  stat_kgw[9,i]<-d_stat_log
-  stat_kgw[10,i]<-p_value_log
+  stat_kgw[9,i] <- d_stat_log
+  stat_kgw[10,i] <- p_value_log
   
 }
 ```
+
 The p-values for the log-normal K-S test are all at 0, indicating that none of these distributions are log-normally distributed. So it turns out that Cl, pH, and Si have neither a normal distribution or a log-normal distribution. 
 
-## QQ Plots
-Since we now know that most of the analytes in this data set are indeed normally distributed, we can back up that interpretation by creating QQ plots for a subset of analytes 
+## QQ Plots: d i. QQ plot with interpretation supported by statistical tests
+
+Since we now know that most of the analytes in this data set are indeed normally distributed, we can back up that 
+interpretation by creating QQ plots for a subset of analytes. 
+
 ```{r warning = FALSE}
 par(new = TRUE)
 par(mfrow=c(3,4))
@@ -276,10 +277,11 @@ qqnorm(kgw_chem_subset$k1, main = "k1")
 
 
 ```
-This result is interesting to me, because a lot of these don't appear as very straight lines, although most are somewhat straight. This to me reinforces the fact that Shapiro identified almost no normal distributions, while K-S identified most analytes as normal
 
-## Identifying Outliers: Rosner Test
-Moving on from tests for normality, I want to use the Rosner test to idenitfy potential outliers, and see generally tracks with the appearence of the nitrate boxplots 
+This result is interesting to me, because a lot of these don't appear as very straight lines, although most are somewhat straight. This to me reinforces the fact that Shapiro identified almost no normal distributions, while K-S identified most analytes as normal.
+
+## Identifying Outliers: Rosner Test: c iv.
+Moving on from tests for normality, I want to use the Rosner test to identify potential outliers, and see generally tracks with the appearance of the nitrate boxplots 
 
 ```{r warning = FALSE}
 
@@ -290,10 +292,45 @@ ros$n.outliers
 
 ros$all.stats
 ```
+
 According to Rosner, there are 15 outliers, all occurring on the high end. This matches my intuition based on the boxplot generated earlier. 
 
-## Examination of well levels, storage, and surface flow duration
-In my research I want to examine surface water - groundwater interactions at konza (which has an intermittent stream system). To do this, I want to find variables that correlate with flow duration at each location where we have placed a Stream Temperature, Intermittency, and Conductivty (STIC) logger. Below is a map of flow duration for each logger form the period June 2021 to September 2021. Before I can generate this map, I need to combine, tidy, and my classify my data which includes the use of a map function, as well as conditional branching 
+## PCA of Full Konza GW Chem 
+
+```{r}
+
+
+
+
+```
+
+Now we will revisit the relationship between mg1 and cl...
+
+## Linear model for correlated vars: g. bet fit linear model
+
+```{r}
+linearmod<-lm(kgw_chem_subset$mg1 ~ kgw_chem_subset$cl) #perform the regression
+sumlinearmod<-summary(linearmod) #write summary of regression
+sumlinearmod
+m<-round(linearmod$coefficients[2],3) #take slope from summary report
+intcpt<-round(linearmod$coefficients[1],3) #take intercept
+r2<-round(sumlinearmod$r.squared,3) #take r squared
+
+tx1<-as.expression(bquote("r"^2 ~ "=" ~ .(r2)))
+tx2<-c(paste("m = ",m,"\n"),
+paste("b = ",intcpt,"\n"),
+tx1)
+
+plot(mg1 ~ cl, data = kgw_chem_subset, main="Linear Model")
+abline(lm(kgw_chem_subset$mg1 ~ kgw_chem_subset$cl, data = kgw_chem_subset), col = "red")
+legend("topright", inset=0.03,tx2,box.lty = 0)
+
+```
+
+## Examination of storage, and surface flow duration
+In my research I want to examine surface water - groundwater interactions at konza (which has an intermittent stream system). To do this, I want to find variables that correlate with flow duration at each location where we have placed a Stream Temperature, Intermittency, and Conductivty (STIC) logger. Below is a map of flow duration for each logger form the period June 2021 to September 2021. Before I can generate this map, I need to combine, tidy, and my classify my data which includes the use of a map function, as well as conditional branching. 
+
+## Preparing Flow Duration metrics: map function and conditional statement
 ```{r, include = FALSE, warning = FALSE}
 data_dir <- "processed_stic_names"
 
@@ -327,9 +364,11 @@ stic_duration <- stic_files %>%
 head(stic_duration)
 ```
 
-Now I can make a map of the logger locations, colored by the flow duration for each logger (proportion of total 15-min observations that are classified as wet, out of the total number of observations)
+Now I can make a map of the logger locations, colored by the flow duration for each logger (proportion of total 15-min observations that are classified as wet, out of the total number of observations).
 
-```{r}
+## Flow Duration Map: a. operations involving expanding, reorganizing, reshaping a data frame
+
+```{r warning = FALSE}
 Konza_STICData_highlight <- read_excel("Konza_STICData_highlight.xlsx", 
                                        sheet = "Konza_AllSTICs")
 
@@ -371,8 +410,143 @@ ggplot() +
   ylab("Latitude")
 
 ```
+One of the major findings from examining this map is that watersheds at Konza do not dry from top to bottom. Especially in N04D, many sites in the middle of the watershed exhibit the longest flow duration. My working hypothesis is that groundwater seeps and springs (many of which are located in the middle of N04D) are responsible for this flow persistence. 
+
+## Correlations between flow duration and other physiographic metrics: xy plot and statistical significance 
+
+Now I want to look at how these flow duration values by logger compare with physiographic metrics derived from DEM for the drainage areas of each logger.
+
+```{r warning = FALSE}
+
+# Bring in physiographic metrics csv
+konza_phys <- read_csv("Konza_AllSTICsWithDetails.csv")
+
+# Bring in an index sheet to match site name wth serial number
+stic_name_SN <- read_csv("STIC_name_SN.csv") %>% 
+  rename(logger = STIC_SN)
+
+# join above two data frames
+stic_duration_sn <- left_join(stic_name_SN, stic_duration, by = "logger")
+
+# join by site name to create physiographic metrics data frame
+konza_metrics <- left_join(stic_duration_sn, konza_phys, by = "STIC_name")
+
+head(konza_metrics)
+
+par(mfrow=c(2,2))
+
+plot(konza_metrics$TWI, konza_metrics$duration)
+plot(konza_metrics$ContributingArea_ha, konza_metrics$duration)
+plot(konza_metrics$Elevation_m, konza_metrics$duration)
+plot(konza_metrics$Slope_prc, konza_metrics$duration)
+```
+As it turns out, none of these four metrics appear to have any correlation with flow duration. This is highly unexpected. At least for TWI, you would expect there would be a strong positive correlation between this and flow duration.
+
+Just to be sure, I am going to perform linear correlations to look at the p values.
+
+## Investigating significance of linear relationships 
+```{r}
+
+twi_lm <- lm(konza_metrics$duration ~ konza_metrics$TWI)
+drainage_lm <- lm(konza_metrics$duration ~ konza_metrics$ContributingArea_ha)
+elevation_lm <- lm(konza_metrics$duration ~ konza_metrics$Elevation_m)
+slope_lm <- lm(konza_metrics$duration ~ konza_metrics$Slope_prc)
+
+summary(twi_lm)
+summary(drainage_lm)
+summary(elevation_lm)
+summary(slope_lm)
+
+```
+
+As we can see, none of these linear models show significant p-values (as well as extremely low r-squared values). So we know that these metrics are not predictors of surface flow duration at Konza. Going forward, I want to find more variables to test for correlations (including the unit outcropping at each site)
+
+## Relationship between soil storage and wet network proportion 
+
+Finally, I want to shed some light on how soil storage relates to surface flow in this system. For this I will use additional existing Konza data (storage in the upper 50 cm of soil). However, these stations only began collecting data in July of 2021.
+
+### Map of Average Soil Water Storage at Konza
+```{r warning = FALSE}
+# bring in data from all stations and  row bind
+
+station_1 <- read_csv("pulse_data/s_1.csv")
+station_2 <- read_csv("pulse_data/s_2.csv")
+station_3 <- read_csv("pulse_data/s_3.csv")
+station_4 <- read_csv("pulse_data/s_4.csv")
+station_5 <- read_csv("pulse_data/s_5.csv")
+station_6 <- read_csv("pulse_data/s_6.csv")
+station_7 <- read_csv("pulse_data/s_7.csv")
+station_8 <- read_csv("pulse_data/s_8.csv")
+station_9 <- read_csv("pulse_data/s_9.csv")
+station_10 <- read_csv("pulse_data/s_10.csv")
+station_11 <- read_csv("pulse_data/s_11.csv")
+station_12 <- read_csv("pulse_data/s_12.csv")
+station_13 <- read_csv("pulse_data/s_13.csv")
+station_14 <- read_csv("pulse_data/s_14.csv")
+station_15 <- read_csv("pulse_data/s_15.csv")
+station_16 <- read_csv("pulse_data/s_16.csv")
+
+station_1$id <- "01"
+station_2$id <- "02"
+station_3$id <- "03"
+station_4$id <- "04"
+station_5$id <- "05"
+station_6$id <- "06"
+station_7$id <- "07"
+station_8$id <- "08"
+station_9$id <- "09"
+station_10$id <- "10"
+station_11$id <- "11"
+station_12$id <- "12"
+station_13$id <- "13"
+station_14$id <- "14"
+station_15$id <- "15"
+station_16$id <- "16"
+
+k_p <- bind_rows(station_1, station_2, station_3, station_4, station_5, station_6, 
+                 station_7, station_8, station_9, station_10, station_11, station_12,
+                 station_13, station_14, station_15, station_16)
 
 
+# clean up the data frame
+
+k_p <- k_p %>% 
+  dplyr::mutate(datetime = lubridate::ymd_hms(datetime)) %>% 
+  janitor::clean_names() %>% 
+  dplyr::select(- x1) %>% 
+  dplyr::mutate(id = as.numeric(id))
+
+# bring in coords
+
+pulse_coords <- read_csv("pulse_coords.csv", 
+                         col_types = cols(id = col_number()))
 
 
+pulse_map <- dplyr::left_join(pulse_coords, k_p, by = "id")
+
+### Make Duration Map
+
+
+pulse_locs <- st_as_sf(pulse_map,coords = c("long", "lat"), crs = 4326)
+
+mean_kp <- pulse_locs %>% 
+  group_by(id) %>% 
+  summarize(storage_50cm = mean(storage_50_cm, na.rm = TRUE))
+
+ggplot() + 
+  geom_sf(data = konza_boundary) +
+  geom_sf(data = konza_streams) + 
+  geom_sf(data = mean_kp, size = 4, aes(color = storage_50cm)) +
+  scale_color_viridis_c(direction = -1, name = "mean storage 50 cm") +
+  theme_cowplot() +
+  xlab("Longitude") + 
+  ylab("Latitude") + 
+  xlab("Longitude") + 
+  ylab("Latitude") + 
+  ggtitle("Konza Pulse (July 2021 - April 2022)") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+## Relationship between soil storage and wet network proportion
 

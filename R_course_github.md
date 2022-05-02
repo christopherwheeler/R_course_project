@@ -52,6 +52,8 @@ geology at konza consists of a series of thinly interbedded limestones
 and mudstones, with water movement largely within secondary porosity of
 the limestone layers. Below is a map of the entire site for context.
 
+## Site map: a. operations involving expanding, reorganizing, reshaping a data frame
+
 ``` r
 # Bring in `konza_boundary` shapefiles
 konza_boundary <- st_read(
@@ -95,7 +97,7 @@ ggplot() +
 
 ![](R_course_github_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
-## Data Tidying and First Look
+## Data Tidying and First Look: a. operations involving expanding, reorganizing, reshaping a dataframe
 
 In this section, we will perform some basic data cleaning operations to
 get our data ready for further analysis
@@ -256,17 +258,19 @@ kgw_chem_subset <- kgw_chem %>%
   dplyr::select(na1, na2, ca1, ca2, nh4_n, no3_n, alkalinity, temp, mg1, cl, so4, k1)
 ```
 
-## Cross Plot
+## Cross Plot: d v. xy plot
 
 ``` r
 plot(kgw_chem_subset)
 ```
 
-![](R_course_github_files/figure-gfm/unnamed-chunk-6-1.png)<!-- --> From
-this cross plot, a few correlations stand out to me a potentially
-significant…
+![](R_course_github_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-## Exploration of the chemistry of wells screened in different units.
+From this cross plot, a few correlations stand out to me a potentially
+significant, including the correlations between mg and ca. We will
+revisit this relationships later.
+
+## Exploration of the chemistry of wells screened in different units: a. operations involving expanding, reorganizing, reshaping a data frame
 
 Additionally, as a first pass I want to look at differences among wells
 screened in different geologic units. First I need to do some
@@ -280,7 +284,7 @@ kgw_geosub <- kgw_2[kgw_2$geology == 'AL' | kgw_2$geology == 'AL' | kgw_2$geolog
                  | kgw_2$geology == 'Eis 1' | kgw_2$geology == 'Eis 2'  | kgw_2$geology == '1Mor'| kgw_2$geology == 'Mor', ]
 ```
 
-## Boxplot
+## Boxplot: d iv. boxplot
 
 ``` r
 ggplot(kgw_geosub, aes(x = factor(geology), y = no3_n, fill = geology)) + 
@@ -293,7 +297,7 @@ ggplot(kgw_geosub, aes(x = factor(geology), y = no3_n, fill = geology)) +
 
 ![](R_course_github_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
-## Denisty Plot
+## Denisty Plot: d ii. density plot
 
 ``` r
 ggplot(kgw_geosub, aes(no3_n, fill = geology)) + 
@@ -307,38 +311,7 @@ ggplot(kgw_geosub, aes(no3_n, fill = geology)) +
 
 ![](R_course_github_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
-Now bring in second data set with high frequency GWl measurements on
-well subset
-
-``` r
-agw <- read_csv("agw.csv") %>% 
-  rename(datetime = WLDate) %>% 
-  mutate(datetime = lubridate::mdy_hms(datetime)) %>% 
-  clean_names()
-```
-
-    ## 
-    ## -- Column specification --------------------------------------------------------
-    ## cols(
-    ##   Datacode = col_character(),
-    ##   Rectype = col_double(),
-    ##   Recyear = col_double(),
-    ##   WLDate = col_character(),
-    ##   Wellname = col_character(),
-    ##   WL = col_double(),
-    ##   GWtemp = col_double(),
-    ##   BLtemp = col_character(),
-    ##   Comments = col_character()
-    ## )
-
-At the end I want three animated maps: gw levels, pulse storage, and
-stics
-
-``` r
-#animated maps 
-```
-
-## Evaluation of Statistical Tests
+## Evaluation of Statistical Tests: a. operations involving expanding, reorganizing, reshaping a data frame
 
 Below is making a stats dataframe form the `kgw_chem` numeric data frame
 
@@ -394,9 +367,9 @@ smaller than the mean values. This indicates a right skewed or positive
 skewed distribution. This is very common with environmental data, and
 water quality data in particular. Below I’ll start explicitly evaluating
 the data distribution, starting with Shapiro-Wilkes. But before that I
-want to generate historgrams to visually evaluate distributions
+want to generate histograms to visually evaluate distributions.
 
-## Histograms
+## Histograms: d vi. barchart
 
 ``` r
 # Before Shapiro-Wikes, I want to generate histograms for all analytes
@@ -409,9 +382,9 @@ for(i in 1:ncol(kgw_chem_subset)) {
 }
 ```
 
-![](R_course_github_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](R_course_github_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
-## Shapiro-Wilkes
+## Shapiro-Wilkes: c ii
 
 Looking at the histograms above, it appears that temperature looks the
 most normal, while ammonia looks least normal. I will use Shapiro-Wilkes
@@ -477,11 +450,11 @@ head(stat_kgw)
     ## shapiro_w 9.623978e-01 0.963100330 8.048607e-01 8.695358e-01
     ## shapiro_p 8.956688e-10 0.001734828 3.880320e-37 8.368607e-32
 
-Contrary to my hypothesis, It appears that NONE of the anlaytes have a
-shapiro p value above 0.05, and thus none are normaly distributed
+Contrary to my hypothesis, It appears that NONE of the analytes have a
+Shapiro p value above 0.05, and thus none are normaly distributed
 according to this test
 
-## Kolmogorov-Smirnov Test
+## Kolmogorov-Smirnov Test: c v.
 
 Now I want to check normality again using the K-S test. I am interested
 to see if the results of this test are different from Shapiro-Wilkes.
@@ -512,7 +485,7 @@ Remarkably, results of the K-S test contrast quite strongly with
 Shapiro. According to K-S, all analytes show a normal distribution
 except Cl, pH, and Si.
 
-## Kolmogorov-Smirnov Test for Log-normal Distribution
+## Kolmogorov-Smirnov Test for Log-normal Distribution: c v.
 
 Because a lot of histograms and density curves appear to follow a
 log-normal distribution (as many hydrologic and environmental data sets
@@ -534,8 +507,8 @@ for(i in 1:ncol(stat_kgw)){
  kgw_ks<-ks.test(stat_kgw_unl,"plnorm",mean=mean_kgw,sd=sd_kgw)
   d_stat_log<-round(as.numeric(kgw_ks[1]),4)
   p_value_log<-round(as.numeric(kgw_ks[2]),4)
-  stat_kgw[9,i]<-d_stat_log
-  stat_kgw[10,i]<-p_value_log
+  stat_kgw[9,i] <- d_stat_log
+  stat_kgw[10,i] <- p_value_log
   
 }
 ```
@@ -545,11 +518,11 @@ none of these distributions are log-normally distributed. So it turns
 out that Cl, pH, and Si have neither a normal distribution or a
 log-normal distribution.
 
-## QQ Plots
+## QQ Plots: d i. QQ plot with interpretation supported by statistical tests
 
 Since we now know that most of the analytes in this data set are indeed
 normally distributed, we can back up that interpretation by creating QQ
-plots for a subset of analytes
+plots for a subset of analytes.
 
 ``` r
 par(new = TRUE)
@@ -576,17 +549,18 @@ qqnorm(kgw_chem_subset$so4, main = "so4")
 qqnorm(kgw_chem_subset$k1, main = "k1")
 ```
 
-![](R_course_github_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](R_course_github_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
 This result is interesting to me, because a lot of these don’t appear as
 very straight lines, although most are somewhat straight. This to me
 reinforces the fact that Shapiro identified almost no normal
-distributions, while K-S identified most analytes as normal
+distributions, while K-S identified most analytes as normal.
 
-## Identifying Outliers: Rosner Test
+## Identifying Outliers: Rosner Test: c iv.
 
 Moving on from tests for normality, I want to use the Rosner test to
-idenitfy potential outliers, and see generally tracks with the
-appearence of the nitrate boxplots
+identify potential outliers, and see generally tracks with the
+appearance of the nitrate boxplots
 
 ``` r
 # Rosner test for Nitrate
@@ -621,7 +595,56 @@ ros$all.stats
 According to Rosner, there are 15 outliers, all occurring on the high
 end. This matches my intuition based on the boxplot generated earlier.
 
-## Examination of well levels, storage, and surface flow duration
+## PCA of Full Konza GW Chem
+
+Now we will revisit the relationship between mg1 and cl…
+
+## Linear model for correlated vars: g. bet fit linear model
+
+``` r
+linearmod<-lm(kgw_chem_subset$mg1 ~ kgw_chem_subset$cl) #perform the regression
+sumlinearmod<-summary(linearmod) #write summary of regression
+sumlinearmod
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = kgw_chem_subset$mg1 ~ kgw_chem_subset$cl)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -25.758  -3.446  -0.981   1.404  18.426 
+    ## 
+    ## Coefficients:
+    ##                    Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)         10.1652     0.8269   12.29   <2e-16 ***
+    ## kgw_chem_subset$cl   6.7044     0.5578   12.02   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 5.69 on 449 degrees of freedom
+    ##   (7180 observations deleted due to missingness)
+    ## Multiple R-squared:  0.2434, Adjusted R-squared:  0.2417 
+    ## F-statistic: 144.5 on 1 and 449 DF,  p-value: < 2.2e-16
+
+``` r
+m<-round(linearmod$coefficients[2],3) #take slope from summary report
+intcpt<-round(linearmod$coefficients[1],3) #take intercept
+r2<-round(sumlinearmod$r.squared,3) #take r squared
+
+tx1<-as.expression(bquote("r"^2 ~ "=" ~ .(r2)))
+tx2<-c(paste("m = ",m,"\n"),
+paste("b = ",intcpt,"\n"),
+tx1)
+
+plot(mg1 ~ cl, data = kgw_chem_subset, main="Linear Model")
+abline(lm(kgw_chem_subset$mg1 ~ kgw_chem_subset$cl, data = kgw_chem_subset), col = "red")
+legend("topright", inset=0.03,tx2,box.lty = 0)
+```
+
+![](R_course_github_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+## Examination of storage, and surface flow duration
 
 In my research I want to examine surface water - groundwater
 interactions at konza (which has an intermittent stream system). To do
@@ -631,11 +654,15 @@ Conductivty (STIC) logger. Below is a map of flow duration for each
 logger form the period June 2021 to September 2021. Before I can
 generate this map, I need to combine, tidy, and my classify my data
 which includes the use of a map function, as well as conditional
-branching
+branching.
+
+## Preparing Flow Duration metrics: map function and conditional statement
 
 Now I can make a map of the logger locations, colored by the flow
 duration for each logger (proportion of total 15-min observations that
-are classified as wet, out of the total number of observations)
+are classified as wet, out of the total number of observations).
+
+## Flow Duration Map: a. operations involving expanding, reorganizing, reshaping a data frame
 
 ``` r
 Konza_STICData_highlight <- read_excel("Konza_STICData_highlight.xlsx", 
@@ -646,11 +673,8 @@ Konza_STICData_highlight <- Konza_STICData_highlight %>%
 
 
 Konza_STICData_highlight$logger <- as.numeric(Konza_STICData_highlight$logger)
-```
 
-    ## Warning: NAs introduced by coercion
 
-``` r
 konza_high_stic_coord <- left_join(Konza_STICData_highlight, stic_duration, by = "logger", na.rm = TRUE)
 
 
@@ -699,4 +723,467 @@ ggplot() +
   ylab("Latitude")
 ```
 
-![](R_course_github_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+![](R_course_github_files/figure-gfm/unnamed-chunk-20-1.png)<!-- --> One
+of the major findings from examining this map is that watersheds at
+Konza do not dry from top to bottom. Especially in N04D, many sites in
+the middle of the watershed exhibit the longest flow duration. My
+working hypothesis is that groundwater seeps and springs (many of which
+are located in the middle of N04D) are responsible for this flow
+persistence.
+
+## Correlations between flow duration and other physiographic metrics: xy plot and statistical significance
+
+Now I want to look at how these flow duration values by logger compare
+with physiographic metrics derived from DEM for the drainage areas of
+each logger.
+
+``` r
+# Bring in physiographic metrics csv
+konza_phys <- read_csv("Konza_AllSTICsWithDetails.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   STIC_name = col_character(),
+    ##   TWI = col_double(),
+    ##   ContributingArea_ha = col_double(),
+    ##   Elevation_m = col_double(),
+    ##   Slope_prc = col_double(),
+    ##   long = col_double(),
+    ##   lat = col_double()
+    ## )
+
+``` r
+# Bring in an index sheet to match site name wth serial number
+stic_name_SN <- read_csv("STIC_name_SN.csv") %>% 
+  rename(logger = STIC_SN)
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   STIC_source = col_character(),
+    ##   STIC_SN = col_double(),
+    ##   STIC_name = col_character(),
+    ##   lat = col_double(),
+    ##   long = col_double()
+    ## )
+
+``` r
+# join above two data frames
+stic_duration_sn <- left_join(stic_name_SN, stic_duration, by = "logger")
+
+# join by site name to create physiographic metrics data frame
+konza_metrics <- left_join(stic_duration_sn, konza_phys, by = "STIC_name")
+
+head(konza_metrics)
+```
+
+    ## # A tibble: 6 x 14
+    ##   STIC_source   logger STIC_name lat.x long.x n_wet count duration   TWI
+    ##   <chr>          <dbl> <chr>     <dbl>  <dbl> <int> <int>    <dbl> <dbl>
+    ## 1 AIMS        21064675 01M01_1    39.1  -96.6    NA    NA   NA      16.6
+    ## 2 AIMS        21044179 01M02_1    39.1  -96.6  3632 11264    0.322  15.4
+    ## 3 AIMS        21064685 01M03_1    39.1  -96.6  2065 11274    0.183  15.7
+    ## 4 AIMS        21044159 01M05_1    39.1  -96.6 10223 12219    0.837  16.0
+    ## 5 AIMS        20946478 01M06_1    39.1  -96.6  3789 12220    0.310  15.8
+    ## 6 AIMS        21064686 02M01_1    39.1  -96.6    NA    NA   NA      17.5
+    ## # ... with 5 more variables: ContributingArea_ha <dbl>, Elevation_m <dbl>,
+    ## #   Slope_prc <dbl>, long.y <dbl>, lat.y <dbl>
+
+``` r
+par(mfrow=c(2,2))
+
+plot(konza_metrics$TWI, konza_metrics$duration)
+plot(konza_metrics$ContributingArea_ha, konza_metrics$duration)
+plot(konza_metrics$Elevation_m, konza_metrics$duration)
+plot(konza_metrics$Slope_prc, konza_metrics$duration)
+```
+
+![](R_course_github_files/figure-gfm/unnamed-chunk-21-1.png)<!-- --> As
+it turns out, none of these four metrics appear to have any correlation
+with flow duration. This is highly unexpected. At least for TWI, you
+would expect there would be a strong positive correlation between this
+and flow duration.
+
+Just to be sure, I am going to perform linear correlations to look at
+the p values.
+
+## Investigating significance of linear relationships
+
+``` r
+twi_lm <- lm(konza_metrics$duration ~ konza_metrics$TWI)
+drainage_lm <- lm(konza_metrics$duration ~ konza_metrics$ContributingArea_ha)
+elevation_lm <- lm(konza_metrics$duration ~ konza_metrics$Elevation_m)
+slope_lm <- lm(konza_metrics$duration ~ konza_metrics$Slope_prc)
+
+summary(twi_lm)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = konza_metrics$duration ~ konza_metrics$TWI)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -0.5650 -0.3096 -0.0408  0.3537  0.5290 
+    ## 
+    ## Coefficients:
+    ##                   Estimate Std. Error t value Pr(>|t|)   
+    ## (Intercept)        1.34114    0.49266   2.722   0.0082 **
+    ## konza_metrics$TWI -0.04857    0.03144  -1.545   0.1270   
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.3497 on 69 degrees of freedom
+    ##   (5 observations deleted due to missingness)
+    ## Multiple R-squared:  0.03343,    Adjusted R-squared:  0.01942 
+    ## F-statistic: 2.386 on 1 and 69 DF,  p-value: 0.127
+
+``` r
+summary(drainage_lm)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = konza_metrics$duration ~ konza_metrics$ContributingArea_ha)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.51331 -0.33291 -0.05101  0.40914  0.45824 
+    ## 
+    ## Coefficients:
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                        0.5915396  0.0541183  10.930   <2e-16 ***
+    ## konza_metrics$ContributingArea_ha -0.0003844  0.0014937  -0.257    0.798    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.3555 on 69 degrees of freedom
+    ##   (5 observations deleted due to missingness)
+    ## Multiple R-squared:  0.0009591,  Adjusted R-squared:  -0.01352 
+    ## F-statistic: 0.06624 on 1 and 69 DF,  p-value: 0.7977
+
+``` r
+summary(elevation_lm)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = konza_metrics$duration ~ konza_metrics$Elevation_m)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.64856 -0.30967 -0.04447  0.33984  0.53201 
+    ## 
+    ## Coefficients:
+    ##                            Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept)               -1.147314   1.009743  -1.136   0.2598  
+    ## konza_metrics$Elevation_m  0.004600   0.002682   1.715   0.0909 .
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.3484 on 69 degrees of freedom
+    ##   (5 observations deleted due to missingness)
+    ## Multiple R-squared:  0.04088,    Adjusted R-squared:  0.02698 
+    ## F-statistic: 2.941 on 1 and 69 DF,  p-value: 0.09086
+
+``` r
+summary(slope_lm)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = konza_metrics$duration ~ konza_metrics$Slope_prc)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -0.5554 -0.3212 -0.0710  0.3923  0.4718 
+    ## 
+    ## Coefficients:
+    ##                         Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)              0.51467    0.08664   5.940 1.04e-07 ***
+    ## konza_metrics$Slope_prc  0.02292    0.02549   0.899    0.372    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.3536 on 69 degrees of freedom
+    ##   (5 observations deleted due to missingness)
+    ## Multiple R-squared:  0.01158,    Adjusted R-squared:  -0.002744 
+    ## F-statistic: 0.8085 on 1 and 69 DF,  p-value: 0.3717
+
+As we can see, none of these linear models show significant p-values (as
+well as extremely low r-squared values). So we know that these metrics
+are not predictors of surface flow duration at Konza. Going forward, I
+want to find more variables to test for correlations (including the unit
+outcropping at each site)
+
+## Relationship between soil storage and wet network proportion
+
+Finally, I want to shed some light on how soil storage relates to
+surface flow in this system. For this I will use additional existing
+Konza data (storage in the upper 50 cm of soil). However, these stations
+only began collecting data in July of 2021.
+
+### Map of Average Soil Water Storage at Konza
+
+``` r
+# bring in data from all stations and  row bind
+
+station_1 <- read_csv("pulse_data/s_1.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_2 <- read_csv("pulse_data/s_2.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_3 <- read_csv("pulse_data/s_3.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_4 <- read_csv("pulse_data/s_4.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_5 <- read_csv("pulse_data/s_5.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_6 <- read_csv("pulse_data/s_6.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_7 <- read_csv("pulse_data/s_7.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_8 <- read_csv("pulse_data/s_8.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_9 <- read_csv("pulse_data/s_9.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_10 <- read_csv("pulse_data/s_10.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_11 <- read_csv("pulse_data/s_11.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_12 <- read_csv("pulse_data/s_12.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_13 <- read_csv("pulse_data/s_13.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_14 <- read_csv("pulse_data/s_14.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_15 <- read_csv("pulse_data/s_15.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_16 <- read_csv("pulse_data/s_16.csv")
+```
+
+    ## 
+    ## -- Column specification --------------------------------------------------------
+    ## cols(
+    ##   .default = col_double(),
+    ##   datetime = col_datetime(format = "")
+    ## )
+    ## i Use `spec()` for the full column specifications.
+
+``` r
+station_1$id <- "01"
+station_2$id <- "02"
+station_3$id <- "03"
+station_4$id <- "04"
+station_5$id <- "05"
+station_6$id <- "06"
+station_7$id <- "07"
+station_8$id <- "08"
+station_9$id <- "09"
+station_10$id <- "10"
+station_11$id <- "11"
+station_12$id <- "12"
+station_13$id <- "13"
+station_14$id <- "14"
+station_15$id <- "15"
+station_16$id <- "16"
+
+k_p <- bind_rows(station_1, station_2, station_3, station_4, station_5, station_6, 
+                 station_7, station_8, station_9, station_10, station_11, station_12,
+                 station_13, station_14, station_15, station_16)
+
+
+# clean up the data frame
+
+k_p <- k_p %>% 
+  dplyr::mutate(datetime = lubridate::ymd_hms(datetime)) %>% 
+  janitor::clean_names() %>% 
+  dplyr::select(- x1) %>% 
+  dplyr::mutate(id = as.numeric(id))
+
+# bring in coords
+
+pulse_coords <- read_csv("pulse_coords.csv", 
+                         col_types = cols(id = col_number()))
+
+
+pulse_map <- dplyr::left_join(pulse_coords, k_p, by = "id")
+
+### Make Duration Map
+
+
+pulse_locs <- st_as_sf(pulse_map,coords = c("long", "lat"), crs = 4326)
+
+mean_kp <- pulse_locs %>% 
+  group_by(id) %>% 
+  summarize(storage_50cm = mean(storage_50_cm, na.rm = TRUE))
+
+ggplot() + 
+  geom_sf(data = konza_boundary) +
+  geom_sf(data = konza_streams) + 
+  geom_sf(data = mean_kp, size = 4, aes(color = storage_50cm)) +
+  scale_color_viridis_c(direction = -1, name = "mean storage 50 cm") +
+  theme_cowplot() +
+  xlab("Longitude") + 
+  ylab("Latitude") + 
+  xlab("Longitude") + 
+  ylab("Latitude") + 
+  ggtitle("Konza Pulse (July 2021 - April 2022)") + 
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+![](R_course_github_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+## Relationship between soil storage and wet network proportion
